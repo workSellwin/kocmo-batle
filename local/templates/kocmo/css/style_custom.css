@@ -76,3 +76,9 @@
     height:auto;
     padding-bottom: 10px;
 }
+.ajax-message.active{
+    background: #E6276F;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}

@@ -99,7 +99,7 @@ elseif ($cache->startDataCache()) {
             $first = true;
             ?>
             <? foreach ($sections as $section): ?>
-                <? if ($first): ?>
+                <? if ($first && false): ?>
                     <li class="category-subcategory__item">
                         <span class="category-subcategory__lnk"><?= $section['NAME'] ?></span>
                     </li>
