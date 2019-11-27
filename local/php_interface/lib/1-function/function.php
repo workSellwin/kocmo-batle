@@ -11,6 +11,10 @@ function _Check404Error()
     }
 }*/
 
+function number_format_kocmo($float){
+    return number_format($float,2,'.',' ');
+}
+
 if (!function_exists("getChilds")) {
     function getChilds($input, &$start = 0, $level = 0)
     {
@@ -109,6 +113,44 @@ if (!function_exists("array_diff_assoc_recursive")) {
     }
 }
 
+if (!function_exists('AddOrderProperty')) {
+    /**
+     * @param $prop_id
+     * @param $value
+     * @param $order
+     * @return bool
+     */
+    function AddOrderProperty($prop_id, $value, $order)
+    {
+        if (!strlen($prop_id)) {
+            return false;
+        }
+        if (CModule::IncludeModule('sale')) {
+            if ($arOrderProps = CSaleOrderProps::GetByID($prop_id)) {
+                $db_vals = CSaleOrderPropsValue::GetList(array(), array('ORDER_ID' => $order, 'ORDER_PROPS_ID' => $arOrderProps['ID']));
+                if ($arVals = $db_vals->Fetch()) {
+                    return CSaleOrderPropsValue::Update($arVals['ID'], array(
+                        'NAME' => $arVals['NAME'],
+                        'CODE' => $arVals['CODE'],
+                        'ORDER_PROPS_ID' => $arVals['ORDER_PROPS_ID'],
+                        'ORDER_ID' => $arVals['ORDER_ID'],
+                        'VALUE' => $value,
+                    ));
+                } else {
+                    return CSaleOrderPropsValue::Add(array(
+                        'NAME' => $arOrderProps['NAME'],
+                        'CODE' => $arOrderProps['CODE'],
+                        'ORDER_PROPS_ID' => $arOrderProps['ID'],
+                        'ORDER_ID' => $order,
+                        'VALUE' => $value,
+                    ));
+                }
+            }
+        }
+    }
+}
+
+
 if (!function_exists("getDataMainTabsSlider")) {
     function getDataMainTabsSlider()
     {
@@ -117,7 +159,7 @@ if (!function_exists("getDataMainTabsSlider")) {
                 'ID' => 'news',
                 'NAME' => 'Новинки',
                 'FILTER' => [
-                    'PROPERTY_NEWPRODUCT_VALUE' => 'Да'
+                    'PROPERTY_STATUS_VALUE' => 'Новинка'
                 ],
                 'ACTIVE' => 'active',
             ],
@@ -125,7 +167,7 @@ if (!function_exists("getDataMainTabsSlider")) {
                 'ID' => 'bestsellers',
                 'NAME' => 'Бестселлеры',
                 'FILTER' => [
-                    'PROPERTY_SPECIALOFFER_VALUE' => 'Да'
+                    'PROPERTY_STATUS_VALUE' => 'Хит продаж'
                 ],
                 'ACTIVE' => ''
             ],
@@ -133,7 +175,7 @@ if (!function_exists("getDataMainTabsSlider")) {
                 'ID' => 'only-cosmo',
                 'NAME' => 'Только в космо',
                 'FILTER' => [
-                    'PROPERTY_SALELEADER_VALUE' => 'Да'
+                    'PROPERTY_STATUS_VALUE' => 'Только в Космо'
                 ],
                 'ACTIVE' => ''
             ],

@@ -179,15 +179,20 @@ $generalParams = array(
 
 $obName = 'ob' . preg_replace('/[^a-zA-Z0-9_]/', 'x', $this->GetEditAreaId($navParams['NavNum']));
 $containerName = 'container-' . $navParams['NavNum']; ?>
-<? if (!empty($arResult['ITEM_ROWS'])): ?>
+<? if (!empty($arResult['ITEM_ROWS'])):
+
+
+    $basket = new Basket();
+    $arProd = $basket::getProductBasket();
+    $arProd = array_column($arProd, 'PRODUCT_ID', 'PRODUCT_ID');
+
+    ?>
 
     <div class="products">
-        <div id="AJAX_CONTAINER_SUGGESTIONS" data-NavPageCount="<?= $arResult['NAV_RESULT']->NavPageCount ?>"
-             data-Page="<?= isset($_REQUEST['PAGEN_1']) ? $_REQUEST['PAGEN_1'] : 1 ?>">
             <div class="container">
                 <div class="preloader-wrap">
                     <div class="products__container">
-
+                        <?AjaxContent::Start('AJAX_BTN_JS') ;?>
                         <? if (!empty($arResult['ITEMS']) && !empty($arResult['ITEM_ROWS'])):
                             $areaIds = array();
 
@@ -198,11 +203,7 @@ $containerName = 'container-' . $navParams['NavNum']; ?>
                                 $this->AddDeleteAction($uniqueId, $item['DELETE_LINK'], $elementDelete, $elementDeleteParams);
                             endforeach ?>
                             <!-- items-container -->
-                            <?
-                            if (isset($_REQUEST['ajax_suggestions']) && $_REQUEST['ajax_suggestions'] == 'Y'):
-                                $GLOBALS['APPLICATION']->RestartBuffer(); ?>
-                            <?endif;
-                            foreach ($arResult['ITEM_ROWS'] as $rowData):
+                            <?foreach ($arResult['ITEM_ROWS'] as $rowData):
                                 $rowItems = array_splice($arResult['ITEMS'], 0, $rowData['COUNT']); ?>
                                 <?
                                 foreach ($rowItems as $item):?>
@@ -217,6 +218,7 @@ $containerName = 'container-' . $navParams['NavNum']; ?>
                                             "BIG_BUTTONS" => "Y",
                                             "SCALABLE" => "N",
                                             'CLASS' => 'swiper-slide products-item',
+                                            'ADD_BASKET' => $arProd,
                                         ),
                                         "PARAMS" => $generalParams + array("SKU_PROPS" => $arResult["SKU_PROPS"][$item["IBLOCK_ID"]])
                                     ),
@@ -225,15 +227,17 @@ $containerName = 'container-' . $navParams['NavNum']; ?>
                                     ); ?>
                                 <? endforeach; ?>
                             <?endforeach;
-                            if (isset($_REQUEST['ajax_suggestions']) && $_REQUEST['ajax_suggestions'] == 'Y'):
-                                ?>
-
-                            <?
-                            die();
-                            endif;
                             unset($generalParams, $rowItems);
                         endif; ?>
-
+                        <?global $OBJ_ITEMS; ?>
+                        <script type="text/javascript">
+                            if(typeof OBJ_ITEMS != 'undefined'){
+                                var AJAX_ITEMS = <?echo CUtil::PhpToJSObject($OBJ_ITEMS['OBJ_ITEM'])?>;
+                                OBJ_ITEMS = mergeJsObj(OBJ_ITEMS, AJAX_ITEMS);
+                                initBtnItem(OBJ_ITEMS);
+                            }
+                        </script>
+                        <?AjaxContent::Finish('AJAX_BTN_JS')?>
                     </div>
 
                     <div class="preloader" style="display: none;">
@@ -242,18 +246,6 @@ $containerName = 'container-' . $navParams['NavNum']; ?>
                         </svg>
                     </div>
                 </div>
-
-                <? if ($arResult['NAV_RESULT']->NavPageCount != $arResult['NAV_RESULT']->NavPageNomer): ?>
-                    <div class="button-more-wrap">
-                        <!-- MainJs.suggestionMore -->
-                        <div class="suggestions_sale__btn js_my_btn_suggestions">
-                            Показать больше
-                            <svg width="9" height="16">
-                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#svg-arrow-down"></use>
-                            </svg>
-                        </div>
-                    </div>
-                <? endif; ?>
 
                 <div data-pagination-num="<?= $navParams['NavNum'] ?>">
                     <!-- pagination-container -->
@@ -265,3 +257,5 @@ $containerName = 'container-' . $navParams['NavNum']; ?>
     </div>
 
 <? endif; ?>
+
+

@@ -4,21 +4,25 @@
 namespace Lui\Kocmo\Request;
 
 
-use Bitrix\Sale;
 use Bitrix\Main\Loader;
+use Bitrix\Sale;
 
 class Basket extends Base
 {
 
     protected $obBasket;
+    protected $arPrice = [];
     protected $arCache = [];
+    protected $hash = '';
+
 
     public function __construct()
     {
-        $url = 'http://kocmo1c.sellwin.by/Kosmo_Sergey/hs/Kocmo/GetBasket';
+        $url = 'http://kocmo1c.sellwin.by/Kosmo/hs/Kocmo/GetBasket';
         $arParams = ['json' => ''];
         parent::__construct($url, $arParams);
         $this->SetBasket();
+        $this->SetAllPrice();
         $this->GetCache();
     }
 
@@ -27,13 +31,30 @@ class Basket extends Base
         return 'Basket-Request-arCache';
     }
 
+    protected function RemoveCache()
+    {
+        unset($_SESSION[$this->GetCacheKey()]);
+    }
+
+    protected function KeyHashFinal()
+    {
+        return 'Basket-Request-1c-final';
+    }
+
+    public static function Get1CRequest()
+    {
+        $ob = new self();
+        return $ob->arCache[$ob->KeyHashFinal()];
+    }
+
+
     protected function SetCacheData($key, $data)
     {
         $this->arCache[$key] = $data;
         $this->SetCache();
     }
 
-    protected function GeCacheData($key)
+    protected function GetCacheData($key)
     {
         return $this->arCache[$key];
     }
@@ -65,7 +86,9 @@ class Basket extends Base
     protected function GetStructure()
     {
         return [
-            'card' => '000223',
+            // 'card' => '000223',
+            'card' => '',
+            'promo' => '',
             'shop' => '554e5045-aa97-11e8-a216-00505601048d',
             'goods' => [
                 [
@@ -81,8 +104,24 @@ class Basket extends Base
     public function GetDiscount()
     {
         $arReqest = $this->GetStructure();
+
+        $obU = \Lui\Kocmo\Helper\UserData::getInstance();
+
+        if ($card = $obU->GetCard()) {
+            $arReqest['card'] = $card;
+        }
+
+        if ($promo = $_REQUEST['ORDER_PROP_27']) {
+            $arReqest['promo'] = $promo;
+        }
+
         $arReqest['goods'] = $this->SetGoods();
-        return $this->Send($arReqest);
+        if($arReqest['goods']){
+            return $this->Send($arReqest);
+        }else{
+            return [];
+        }
+
     }
 
     protected function Send(array $arRequest)
@@ -90,13 +129,14 @@ class Basket extends Base
         Loader::includeSharewareModule('kocmo.exchange');
         $json = json_encode($arRequest);
         $hash = $this->GetHash($json);
-        if (!$data = $this->GeCacheData($hash)) {
+        if (!$data = $this->GetCacheData($hash)) {
             try {
                 $client = new \GuzzleHttp\Client();
                 $res = $client->request('GET', $this->url, [
                     'query' => ['json' => $json]
                 ]);
                 $data = $res->getBody();
+
                 $data = json_decode($data, true);
             } catch (\Exception $e) {
                 $data = [
@@ -104,6 +144,7 @@ class Basket extends Base
                 ];
             }
             $this->SetCacheData($hash, $data);
+            $this->SetCacheData($this->KeyHashFinal(), $data);
         }
         return $data;
     }
@@ -124,15 +165,66 @@ class Basket extends Base
         return $arResult;
     }
 
+    /**
+     *
+     */
+    protected function SetAllPrice()
+    {
+        $this->arPrice = $this->GetAllPriceItems();
+    }
+
 
     protected function SetGood(Sale\BasketItem $basketItem)
     {
+
         $arRequest = [
             'UID' => $basketItem->getField('PRODUCT_XML_ID'),
             'COUNT' => $basketItem->getQuantity(),
-            'SUMM' => $basketItem->getFinalPrice(),
+            'SUMM' => $this->GetPriceRequest($basketItem),
         ];
         return $arRequest;
     }
+
+    protected function GetPriceRequest(Sale\BasketItem $basketItem): float
+    {
+        $result = 1000000;
+        $id = $basketItem->getField('PRODUCT_ID');
+        $count = $basketItem->getQuantity();
+        $arPrice = $this->arPrice[$id];
+        if ($arPrice[2]) {
+            $result = round($arPrice[2]['PRICE'] * $count, 2);
+        } elseif ($arPrice[3]) {
+            $result = round($arPrice[3]['PRICE'] * $count, 2);
+        }
+        return $result;
+    }
+
+
+    protected function GetAllPriceItems()
+    {
+        $arResult = [];
+        $ob = $this->obBasket;
+        $arId = [];
+        foreach ($ob as $basketItem) {
+            if ($basketItem instanceof Sale\BasketItem) {
+                $arId[] = $basketItem->getField('PRODUCT_ID');
+            }
+        }
+
+        $allProductPrices = \Bitrix\Catalog\PriceTable::getList([
+            "select" => ['ID', 'PRODUCT_ID', 'CATALOG_GROUP_ID', 'PRICE', 'CURRENCY'],
+            "filter" => [
+                "=PRODUCT_ID" => $arId,
+            ],
+            "order" => ["ID" => "ASC"]
+        ])->fetchAll();
+        if ($allProductPrices) {
+            foreach ($allProductPrices as $arPrice) {
+                $arResult[$arPrice['PRODUCT_ID']][$arPrice['CATALOG_GROUP_ID']] = $arPrice;
+            }
+        }
+        return $arResult;
+    }
+
 
 }

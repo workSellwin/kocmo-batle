@@ -15,19 +15,20 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
  */
 $ALX = "FID" . $arParams["FORM_ID"];
 if (!function_exists('altasib_fb_check_spec_chars')) {
-       function altasib_fb_check_spec_chars($val, $arParams){
-               if ($arParams['SPEC_CHAR'] == 'Y'){
-                       $chars_array = explode(",", $arParams['SPEC_CHAR_LIST']);
-                       foreach($chars_array as $chars)
-                               if(strpos($val, $chars) !== false)
-                                       return true;
-                       return false;
-               }
-       }
+    function altasib_fb_check_spec_chars($val, $arParams)
+    {
+        if ($arParams['SPEC_CHAR'] == 'Y') {
+            $chars_array = explode(",", $arParams['SPEC_CHAR_LIST']);
+            foreach ($chars_array as $chars)
+                if (strpos($val, $chars) !== false)
+                    return true;
+            return false;
+        }
+    }
 }
 $ALREADY_SEND_MESSAGE = $_SESSION['alx_send_success' . $ALX] == 'Y';
-if($arParams['SPEC_CHAR_LIST'] == "")
-        $arParams['SPEC_CHAR_LIST'] = "@,/,<,>";
+if ($arParams['SPEC_CHAR_LIST'] == "")
+    $arParams['SPEC_CHAR_LIST'] = "@,/,<,>";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($_POST["OPEN_POPUP"] == $ALX || $_POST["FEEDBACK_FORM_" . $ALX]) {
@@ -325,8 +326,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["FEEDBACK_FORM_" . $ALX] && $
                             }
                         }
                         $PROPS[$k] = $val;
-                                                if (altasib_fb_check_spec_chars($val, $arParams))
-                                                        $arResult["FORM_ERRORS"]["OTHER"]["SPEC_CHAR"] = GetMessage("SPEC_CHAR_ERROR").$arParams['SPEC_CHAR_LIST'];
+                        if (altasib_fb_check_spec_chars($val, $arParams))
+                            $arResult["FORM_ERRORS"]["OTHER"]["SPEC_CHAR"] = GetMessage("SPEC_CHAR_ERROR") . $arParams['SPEC_CHAR_LIST'];
                     }
                 }
             }
@@ -346,17 +347,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["FEEDBACK_FORM_" . $ALX] && $
         }
     }
     // requare select need
-    if($arParams['REQUIRED_SECTION'] == "Y"){
-        if(empty($_POST['type_question_'.$ALX])){
+    if ($arParams['REQUIRED_SECTION'] == "Y") {
+        if (empty($_POST['type_question_' . $ALX])) {
             $arResult["FORM_ERRORS"]["EMPTY_FIELD"]["type_question_" . $ALX] = GetMessage("AFBF_ERROR_TEXT");
         }
     }
 
 
     $arResult["FEEDBACK_TEXT"] = trim($_POST["FEEDBACK_TEXT_" . $ALX]);
-        altasib_fb_check_spec_chars($arParams, $arResult["FEEDBACK_TEXT"], $arResult);
-        if (altasib_fb_check_spec_chars($arResult["FEEDBACK_TEXT"], $arParams))
-                $arResult["FORM_ERRORS"]["OTHER"]["SPEC_CHAR"] = GetMessage("SPEC_CHAR_ERROR").$arParams['SPEC_CHAR_LIST'];
+    altasib_fb_check_spec_chars($arParams, $arResult["FEEDBACK_TEXT"], $arResult);
+    if (altasib_fb_check_spec_chars($arResult["FEEDBACK_TEXT"], $arParams))
+        $arResult["FORM_ERRORS"]["OTHER"]["SPEC_CHAR"] = GetMessage("SPEC_CHAR_ERROR") . $arParams['SPEC_CHAR_LIST'];
     if (strlen($arResult["FEEDBACK_TEXT"]) <= 0) {
         if (in_array("FEEDBACK_TEXT_" . $ALX, $arParams["PROPERTY_FIELDS_REQUIRED"])) {
             $arResult["FORM_ERRORS"]["EMPTY_FIELD"]["FEEDBACK_TEXT_" . $ALX] = GetMessage("ALX_FIELD1") . (!empty($arParams["FB_TEXT_NAME"]) ? $arParams["FB_TEXT_NAME"] : GetMessage("ALX_CP_EVENT_TEXT_MESSAGE")) . GetMessage("ALX_FIELD2");
@@ -368,13 +369,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["FEEDBACK_FORM_" . $ALX] && $
     }
 
     $PROPS["USERIP"] = $_SERVER["REMOTE_ADDR"];
-	if(isset($_POST["ELEMENT_NAME"]))
-		$PROPS["ELEMENT_NAME"] =  htmlspecialcharsEx($_POST["ELEMENT_NAME"]); 
-	if(isset($_POST["ELEMENT_EDIT_LINK"]))
-		$PROPS["ELEMENT_EDIT_LINK"] =  htmlspecialcharsEx($_POST["ELEMENT_EDIT_LINK"]); 	 
-	if(isset($_POST["ELEMENT_EDIT_LINK_ID"]) && is_numeric($_POST["ELEMENT_EDIT_LINK_ID"]))
-		$PROPS["ELEMENT_EDIT_LINK_ID"] =  $_POST["ELEMENT_EDIT_LINK_ID"]; 	 	
-	
+    if (isset($_POST["ELEMENT_NAME"]))
+        $PROPS["ELEMENT_NAME"] = htmlspecialcharsEx($_POST["ELEMENT_NAME"]);
+    if (isset($_POST["ELEMENT_EDIT_LINK"]))
+        $PROPS["ELEMENT_EDIT_LINK"] = htmlspecialcharsEx($_POST["ELEMENT_EDIT_LINK"]);
+    if (isset($_POST["ELEMENT_EDIT_LINK_ID"]) && is_numeric($_POST["ELEMENT_EDIT_LINK_ID"]))
+        $PROPS["ELEMENT_EDIT_LINK_ID"] = $_POST["ELEMENT_EDIT_LINK_ID"];
+
     $PROPS["USER_ID"] = $USER->GetID();
 
     if ($arParams["ADD_HREF_LINK"] != "N") {
@@ -493,15 +494,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["FEEDBACK_FORM_" . $ALX] && $
 
         $el = new CIBlockElement;
 
+        if ($arParams['EGIFT'] == 'Y') {
+            $arElementFields['NAME'] = 'Подарочный сертификат';
+        }
+
+
         if (!$ID = $el->Add($arElementFields)) {
             $arResult["FORM_ERRORS"]["ELEMENT_ADD"]["ELEMENT"] = $el->LAST_ERROR;
         } else {
+
+            if ($arParams['EGIFT'] == 'Y') {
+                $arResult['EGIFT_ELEMENT_ID'] = $ID;
+
+                $arFields = array(
+                    "ID" => $ID,
+                    "VAT_ID" => 1, //выставляем тип ндс (задается в админке)
+                    "VAT_INCLUDED" => "Y", //НДС входит в стоимость
+                    "QUANTITY" => 1
+                );
+                \CCatalogProduct::Add($arFields);
+
+
+                // Установим для товара
+                $PRODUCT_ID = $ID;
+                $PRICE_TYPE_ID = 2;
+
+                $arFields = Array(
+                    "PRODUCT_ID" => $PRODUCT_ID,
+                    "CATALOG_GROUP_ID" => $PRICE_TYPE_ID,
+                    "PRICE" => $PROPS['SUM_SERTIFIKAT'],
+                    "CURRENCY" => "BYN",
+                    "QUANTITY_FROM" => false,
+                    "QUANTITY_TO" => false
+                );
+
+                $obPrice = new CPrice();
+                $obPrice->Add($arFields, false);
+
+
+            }
+
             $strMessageForm = "";
             $strMessCategoty = "";
             $_POST["type_question_name_" . $ALX] = trim(htmlspecialcharsEx($_POST["type_question_name_" . $ALX]));
             if (!empty($_POST["type_question_" . $ALX])) {
                 $strMessCategoty = GetMessage("ALX_TREATMENT_CATEGORY") . ": " . $_POST["type_question_name_" . $ALX] . "\n\n";
-            }else{
+            } else {
                 $strMessCategoty = GetMessage("ALX_TREATMENT_CATEGORY") . ": " . GetMessage('EMPTY_SECTION_SECTION') . "\n\n";
             }
 
@@ -1015,11 +1053,11 @@ if (!empty($_POST["TARGET_ELEMENT_ID"])) {
         $ibc = CIBlock::GetByID(intval($ob["IBLOCK_ID"]));
         $ib = $ibc->GetNext();
         if ($arResult["RIGHT_TO_EDIT"] = CIBlockElementRights::UserHasRightTo($ib["ID"], $ob["ID"], "element_edit")) {
-            $arResult["ELEMENT_EDIT_LINK"] = "http://".$_SERVER["SERVER_NAME"] . "/bitrix/admin/iblock_element_edit.php?IBLOCK_ID=" . $ib["ID"] . "&type=" . $ib["IBLOCK_TYPE_ID"] . "&ID=" . $ob["ID"] . "&lang=" . LANGUAGE_ID . "&find_section_section=" . $ob["IBLOCK_SECTION_ID"] . "&WF=Y";
+            $arResult["ELEMENT_EDIT_LINK"] = "http://" . $_SERVER["SERVER_NAME"] . "/bitrix/admin/iblock_element_edit.php?IBLOCK_ID=" . $ib["ID"] . "&type=" . $ib["IBLOCK_TYPE_ID"] . "&ID=" . $ob["ID"] . "&lang=" . LANGUAGE_ID . "&find_section_section=" . $ob["IBLOCK_SECTION_ID"] . "&WF=Y";
         } else {
             $arResult["ELEMENT_EDIT_LINK"] = "";
-        }		
-		$arResult["ELEMENT_EDIT_LINK_ID"] = $ob["ID"];
+        }
+        $arResult["ELEMENT_EDIT_LINK_ID"] = $ob["ID"];
         if (empty($ob["PREVIEW_PICTURE"])) {
             if (!empty($ob["DETAIL_PICTURE"])) {
                 $arResult["POPUP_PICTURE"] = CFile::ResizeImageGet($ob["DETAIL_PICTURE"],

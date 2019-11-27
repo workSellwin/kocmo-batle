@@ -13,6 +13,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
+die('sss');
 ?>
 
 <? IncludeComponent::Menu(["NAME" => 'Акции', 'template' => 'sales', 'ROOT_MENU_TYPE' => 'aside-left-1', 'USE_EXT' => 'Y']); ?>

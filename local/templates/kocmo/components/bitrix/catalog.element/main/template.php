@@ -1,16 +1,7 @@
 <? if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die(); ?>
 <?
+global $OBJ_ITEMS;
 $PROP = array_column($arResult['PROPERTIES'], 'VALUE', 'CODE');
-$PRICE = new Price();
-
-$arPriseType = $PRICE::getListTypePrice();
-
-PR($PRICE::getListTypePrice());
-
-PR($PRICE::getPriceProduct(4303, $arPriseType['ROZNICHNAYA']['XML_ID']));
-PR($PRICE::getPriceProduct(4303, $arPriseType['AKTSIONNAYA']['XML_ID']));
-PR($PRICE::getListGroupID());
-PR($PRICE::savePrice( $arPriseType['ROZNICHNAYA']['ID'], 56, 4303, 'BYN'));
 
 ?>
 
@@ -68,9 +59,9 @@ $AVERAGE_RATING = $PROP['AVERAGE_RATING'];
         </div>
         <!-- MainJs.productFormSubmit() -->
         <form action="" method="post" id="prod_form" class="product__content js_product__form">
-            <input type="hidden" name="OFFERS_ID" value="<?= $arResult['ID'] ?>">
-            <input type="hidden" name="OFFERS_QUANTITY" value="1">
-            <input type="hidden" name="ADD_PROD_BASKET" value="Y">
+            <input type="hidden" name="PRODUCT_ID" value="<?= $arResult['ID'] ?>">
+            <input type="hidden" name="QUANTITY" value="1">
+            <input type="hidden" name="ADD_BASKET" value="Y">
 
             <h1 class="product__title">
                 <?= $arResult['NAME'] ?>
@@ -128,33 +119,43 @@ $AVERAGE_RATING = $PROP['AVERAGE_RATING'];
 
                     </div>
 
-                    <div class="product__view-brand">
-                        <img src="<?= KOCMO_TEMPLATE_PATH ?>/images/temp/product-brand.png" alt="">
-                    </div>
+                    <? if ($arResult['MARKA_BRAND']): ?>
+                        <div class="product__view-brand">
+                            <? if ($arResult['MARKA_BRAND']['PREVIEW_PICTURE']): ?>
+                                <a href="<?= $arResult['MARKA_BRAND']['DETAIL_PAGE_URL'] ?>"><img
+                                            src="<?= $arResult['MARKA_BRAND']['PREVIEW_PICTURE'] ?>" alt=""></a>
+                            <? else: ?>
+                                <a href="<?= $arResult['MARKA_BRAND']['DETAIL_PAGE_URL'] ?>"><?= $arResult['MARKA_BRAND']['NAME'] ?></a>
+                            <? endif; ?>
+                        </div>
+                    <? endif; ?>
+
                 </div>
             </div>
 
             <div class="product__content-row">
                 <div class="product__view">
-                    <? if ($arResult['OFFERS'] || $arResult['ITEM_PRICES'][0]['PRICE']): ?>
+
+                    <? if ($arResult['OFFERS'] || $arResult['elemPrice']['PRICE_NEW']): ?>
                         <div class="product__price-wrap">
-                            <div class="product__old-price" <?= $arResult['ITEM_PRICES'][0]['DISCOUNT'] ? 'style="display: block"' : 'style="display: none"' ?>>
-                                <div><?= $arResult['ITEM_PRICES'][0]['BASE_PRICE'] ?></div>
+                            <div class="product__old-price" <?= $arResult['elemPrice']['PRICE_OLD'] ? 'style="display: block"' : 'style="display: none"' ?>>
+                                <div><?= $arResult['elemPrice']['PRICE_OLD'] ?></div>
                                 <span> руб</span></div>
-                            <div class="product__price" <?= $arResult['ITEM_PRICES'][0]['PRICE'] ? 'style="display: block"' : 'style="display: none"' ?>>
-                                <div><?= $arResult['ITEM_PRICES'][0]['PRICE'] ?></div>
+                            <div class="product__price" <?= $arResult['elemPrice']['PRICE_NEW'] ? 'style="display: block"' : 'style="display: none"' ?>>
+                                <div><?= $arResult['elemPrice']['PRICE_NEW'] ?></div>
                                 <span> руб</span></div>
                         </div>
                     <? endif; ?>
-                    <? if ($arResult['OFFERS'] || $arResult['ITEM_PRICES'][0]['DISCOUNT']): ?>
+
+                    <? if ($arResult['OFFERS'] || $arResult['elemPrice']['PRICE_OLD']) { ?>
                         <div class="product__sale-wrap"
-                             style="<?= $arResult['ITEM_PRICES'][0]['PERCENT'] ? 'display: block' : 'display: none' ?>">
+                             style="<?= $arResult['elemPrice']['PERCENT'] ? 'display: block' : 'display: none' ?>">
 
                             <div class="product__sale-item">
                                 <div class="products-item__label products-item__label--first-order">
-                                    -<?= $arResult['ITEM_PRICES'][0]['PERCENT'] ?>%
+                                    -<?= $arResult['elemPrice']['PERCENT'] ?>%
                                 </div>
-                                Скидка на товар
+                                <?echo $arResult['NAME_DISCOUNT'] ? $arResult['NAME_DISCOUNT'] : 'Скидка на товар'?>
                             </div>
 
                             <? /*
@@ -168,17 +169,21 @@ $AVERAGE_RATING = $PROP['AVERAGE_RATING'];
                         </div>*/ ?>
 
                         </div>
-                    <? endif; ?>
+                    <? } else { ?>
+                        <div class="product__sale-wrap" style="width: 250px">
+
+                        </div>
+                    <? } ?>
 
                     <div class="product__wishlist-wrap">
                         <a href="#" data-id="<?= $arResult['ID']; ?>"
-                           class="btn h2o_add_favor2  btn--transparent product__wishlist">
+                           class="btn h2o_add_favor  btn--transparent product__wishlist">
                             <svg width="25" height="25">
                                 <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#svg-heart"></use>
                             </svg>
                             В избранное
                         </a>
-                        <a href="#" class="show-shops">
+                        <a href="#popup-store-amount" class="show-shops fancybox js_check-sale">
                             <span class="show-shops__ico"></span>
                             <span class="show-shops__txt">Наличие в магазинах</span>
                         </a>
@@ -187,6 +192,8 @@ $AVERAGE_RATING = $PROP['AVERAGE_RATING'];
             </div>
 
             <div class="product__content-row">
+
+
                 <div class="product__footer">
 
                     <? if (!empty($arResult['OFFERS'])): ?>
@@ -205,13 +212,13 @@ $AVERAGE_RATING = $PROP['AVERAGE_RATING'];
 
                             <div class="product__colors-content js_product__colors-content" style="visibility: hidden;">
 
-                                <? foreach ($arResult['OFFERS'] as $orrers): ?>
+                                <? foreach ($arResult['OFFERS'] as $offers): ?>
                                     <label class="product__colors-item js_product__colors-item"
-                                           data-product-color-name="<?= $orrers['NAME'] ?>"
-                                           id="<?= $orrers['ID'] ?>"
-                                           onclick="orrers(this)">
+                                           data-product-color-name="<?= $offers['NAME'] ?>"
+                                           id="<?= $offers['ID'] ?>"
+                                           onclick="offers(this)">
                                     <span class="product__colors-item-inner-border">
-                                        <img src="<?= $orrers['OFFERS_IMG']['src'] ?>"
+                                        <img src="<?= $offers['OFFERS_IMG']['src'] ?>"
                                              alt="">
                                         <input type="radio" name="color" class="product__colors-radio">
                                     </span>
@@ -222,25 +229,26 @@ $AVERAGE_RATING = $PROP['AVERAGE_RATING'];
 
                     <? endif; ?>
 
+
                     <div class="product__buy">
                         <div class="product__counter counter" <?= $arResult['CATALOG_QUANTITY'] > 0 && !$arResult['OFFERS'] && $arResult['dataOffers'][$arResult['ID']]['ADD_BASKET'] != 'Y' ? 'style="display: flex"' : 'style="display: none"' ?>>
                             <? /*js_counter__button*/ ?>
                             <span class="counter__button counter__button--down  main_js_counter__button"
-                                  onclick="clickCounterButton(this)"
+                                  onclick="clickCounterButtonDetailElement(this)"
                                   data-offers-id="<?= $arResult['dataOffers'][$arResult['ID']]['ID'] ?>"></span>
                             <input type="text" class="counter__input js_counter__input"
                                    data-offers-id="<?= $arResult['dataOffers'][$arResult['ID']]['ID'] ?>"
-                                   name="OFFERS_QUANTITY"
-                                   onkeyup="keyupCounterButton(this)" value="1"
+                                   name="QUANTITY"
+                                   onkeyup="keyupCounterButtonDetailElement(this)" value="1"
                                    data-max-count="<?= $arResult['CATALOG_QUANTITY'] ?>"/>
                             <span class="counter__button counter__button--up main_js_counter__button"
-                                  onclick="clickCounterButton(this)"
+                                  onclick="clickCounterButtonDetailElement(this)"
                                   data-offers-id="<?= $arResult['dataOffers'][$arResult['ID']]['ID'] ?>"></span>
                         </div>
 
                         <button type="submit"
-                                data-basket-url="/personal/cart/"
-                                class="btn btn--transparent product__submit" <?= $arResult['CATALOG_QUANTITY'] > 0 ? 'style="display: flex"' : 'style="display: none"' ?>>
+                                data-basket-url="/cart/"
+                                class="btn btn--transparent product__submit prod-items-id_<?= $arResult['dataOffers'][$arResult['ID']]['ID'] ?>" <?= $arResult['CATALOG_QUANTITY'] > 0 ? 'style="display: flex"' : 'style="display: none"' ?>>
                             <svg width="25" height="25">
                                 <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#svg-basket"></use>
                             </svg>
@@ -259,7 +267,6 @@ $AVERAGE_RATING = $PROP['AVERAGE_RATING'];
                                 </span>
                         </a>
                     </div>
-
 
                 </div>
             </div>
@@ -324,3 +331,47 @@ $AVERAGE_RATING = $PROP['AVERAGE_RATING'];
 ),
     false
 ); ?>
+
+
+<?php
+print '<script type="text/javascript">
+  (window["rrApiOnReady"] = window["rrApiOnReady"] || []).push(function() { ';
+$resOffers = CCatalogSKU::getOffersList($arResult["ID"]);
+if ($resOffers[$arResult["ID"]]) {
+    foreach ($resOffers[$arResult["ID"]] as $arItem) {
+        $skus[] = $arItem["ID"];
+    }
+    $skuList = implode(",", $skus);
+    print 'try{ rrApi.groupView([' . $skuList . ']); } catch(e) {}';
+} else {
+    print 'try{ rrApi.view(' . $arResult["ID"] . '); } catch(e) {}';
+}
+print ' })
+  </script>';
+?>
+
+
+
+
+<?//Наличие товара в магазинах
+$APPLICATION->IncludeComponent(
+    "bitrix:catalog.store.amount",
+    "store_amout",
+    Array(
+        "STORES" => array(),
+        "ELEMENT_ID" =>  $arResult["ID"],
+        "ELEMENT_CODE" => "",
+        "OFFER_ID" => "",
+        "STORE_PATH" => "/store/store_detail.php",
+        "CACHE_TYPE" => "A",
+        "CACHE_TIME" => "36000",
+        "MAIN_TITLE" => "Наличие товара в магазинах",
+        "USER_FIELDS" => array("",""),
+        "FIELDS" => array("TITLE","ADDRESS","PHONE","SCHEDULE",""),
+        "SHOW_EMPTY_STORE" => "N",
+        "USE_MIN_AMOUNT" => "N",
+        "SHOW_GENERAL_STORE_INFORMATION" => "N",
+        "MIN_AMOUNT" => "0",
+        "NAME_PRODUCT" => $arResult['NAME']
+    )
+);?>

@@ -39,4 +39,9 @@ interface IblockInterface
      */
     public function GetData(array $arFilter): array;
 
+    /**
+     * @param string $key
+     * @return IblockInterface
+     */
+    public function SetKey(string $key);
 }

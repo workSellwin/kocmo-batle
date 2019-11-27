@@ -22,6 +22,7 @@ $frame = $this->createFrame("subscribe-form", false)->begin();
     <form id="form_subscribe" class="footer-submit">
         <input type="hidden" name="subscribe_form" value="Y">
         <input class="footer-submit__input field-bordered" type="text" name="EMAIL_SUBSCRIBE"
+               onblur="try {rrApi.setEmail(this.value);}catch(e){}"
                placeholder="Введите ваш email">
         <input type="submit" class="btn btn--transparent footer-submit__btn subscribe-btn--js" value="ПОДПИСАТЬСЯ">
     </form>

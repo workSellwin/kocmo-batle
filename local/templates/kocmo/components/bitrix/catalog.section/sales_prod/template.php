@@ -186,6 +186,11 @@ $containerName = 'container-' . $navParams['NavNum']; ?>
 
             <div class="products__container">
                 <? if (!empty($arResult['ITEMS']) && !empty($arResult['ITEM_ROWS'])):
+
+                    $basket = new Basket();
+                    $arProd = $basket::getProductBasket();
+                    $arProd = array_column($arProd, 'PRODUCT_ID', 'PRODUCT_ID');
+
                     $areaIds = array();
                     foreach ($arResult['ITEMS'] as $item):
                         $uniqueId = $item['ID'] . '_' . md5($this->randString() . $component->getAction());
@@ -213,6 +218,7 @@ $containerName = 'container-' . $navParams['NavNum']; ?>
                                     "BIG_BUTTONS" => "Y",
                                     "SCALABLE" => "N",
                                     'CLASS' => 'mobile-scroll-slider-item products-item',
+                                    'ADD_BASKET' => $arProd,
                                 ),
                                 "PARAMS" => $generalParams + array("SKU_PROPS" => $arResult["SKU_PROPS"][$item["IBLOCK_ID"]])
                             ),
@@ -223,7 +229,15 @@ $containerName = 'container-' . $navParams['NavNum']; ?>
                     <?endforeach;
                     if (isset($_REQUEST['ajax_suggestions']) && $_REQUEST['ajax_suggestions'] == 'Y'):
                         ?>
-
+                        <?global $OBJ_ITEMS; ?>
+                        <script type="text/javascript">
+                            if(typeof OBJ_ITEMS != 'undefined'){
+                                var AJAX_ITEMS = <?echo CUtil::PhpToJSObject($OBJ_ITEMS['OBJ_ITEM'])?>;
+                                OBJ_ITEMS = mergeJsObj(OBJ_ITEMS, AJAX_ITEMS);
+                                initBtnItem(OBJ_ITEMS);
+                                ReloadAjax();
+                            }
+                        </script>
                         <?
                         die();
                     endif;

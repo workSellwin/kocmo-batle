@@ -5,6 +5,7 @@ use Bitrix\Main\Page\Asset;
 use Lui\Kocmo\IncludeComponent as Component;
 use Lui\Kocmo\PropertyPage;
 
+global $OBJ_ITEMS;
 CJSCore::Init(array("date"));
 CAjax::Init();
 global $USER;
@@ -23,6 +24,15 @@ define('KOCMO_TEMPLATE_PATH', SITE_TEMPLATE_PATH . '/imposition/build/assets');
     <meta name="format-detection" content="telephone=no">
     <meta name="format-detection" content="address=no">
     <title><? $APPLICATION->ShowTitle() ?></title>
+
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="theme-color" content="#ffffff">
+
     <?
     // CSS
     $obAsset->addCss("/bitrix/css/main/font-awesome.css");
@@ -34,8 +44,23 @@ define('KOCMO_TEMPLATE_PATH', SITE_TEMPLATE_PATH . '/imposition/build/assets');
     $obAsset->addJs(KOCMO_TEMPLATE_PATH . "/js/main.js");
     $obAsset->addJs(SITE_TEMPLATE_PATH . "/js/jquery.maskedinput.min.js"); // https://itchief.ru/lessons/javascript/input-mask-for-html-input-element
     $obAsset->addJs(SITE_TEMPLATE_PATH . "/js/script_costum.js");
+    $obAsset->addJs(SITE_TEMPLATE_PATH . "/js/retailrocket.js");
     ?>
     <? $APPLICATION->ShowHead(); ?>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117911007-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-117911007-1');
+    </script>
+
 </head>
 
 <? $APPLICATION->IncludeComponent(
@@ -57,17 +82,15 @@ define('KOCMO_TEMPLATE_PATH', SITE_TEMPLATE_PATH . '/imposition/build/assets');
                         </svg>
                         <span>Ваш город:</span> Минск
                     </a>
-                    <? /*
-                    <a href="#" class="header-place__item">
+                    <a href="/about/stores/" class="header-place__item">
                         <svg width="21" height="21">
                             <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#svg-find-shop"></use>
                         </svg>
                         Hайти магазин
                     </a>
-*/ ?>
                 </div>
                 <? Component::Menu(['template' => 'top', 'ROOT_MENU_TYPE' => 'top', 'MAX_LEVEL' => '1']) ?>
-                <a href="#" class="header__top-promo">
+                <a href="/action-list/" class="header__top-promo">
                     <svg width="24" height="29">
                         <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#svg-promo-page"></use>
                     </svg>
@@ -126,13 +149,13 @@ define('KOCMO_TEMPLATE_PATH', SITE_TEMPLATE_PATH . '/imposition/build/assets');
                         )
                     ); ?>
 
+                    <? if (\Lui\Kocmo\Helper\Url::Not('/cart/')) { ?>
+                        <? AjaxContent::Start('header_basket') ?>
 
-                    <? AjaxContent::Start('header_basket') ?>
+                        <? Component::SaleBasketBasket(['template' => 'top_basket']) ?>
 
-                    <? Component::SaleBasketBasket(['template' => 'top_basket']) ?>
-
-                    <? AjaxContent::Finish('header_basket') ?>
-
+                        <? AjaxContent::Finish('header_basket') ?>
+                    <? } ?>
                     <? if ($USER->IsAuthorized()) { ?>
                         <a href="/user/profile/" class="personality-state__item personality-state__item--registered">
                             <svg width="25" height="25">
@@ -255,14 +278,15 @@ define('KOCMO_TEMPLATE_PATH', SITE_TEMPLATE_PATH . '/imposition/build/assets');
         <? endif ?>
         ">
         <? if ($obPage->isView('SHOW_SIDEBAR')): ?>
-            <div class="aside">
-                <div class="aside-nav-wrap js_aside-nav-wrap">
-                    <? if ($obPage->isView('Show_aside_left_1')): ?>
-                        <? Component::Menu(["NAME" => $obPage->getProp('aside-left-1-name'), 'template' => 'aside_left_1', 'ROOT_MENU_TYPE' => 'aside-left-1',]); ?>
-                    <? endif; ?>
-                    <? if ($obPage->isView('Show_aside_left_2')): ?>
-                        <? Component::Menu(["NAME" => $obPage->getProp('aside-left-2-name'), 'template' => 'aside_left_2', 'ROOT_MENU_TYPE' => 'aside-left-2',]); ?>
-                    <? endif; ?>
-                </div>
+        <div class="aside">
+            <div class="aside-nav-wrap js_aside-nav-wrap">
+                <? if ($obPage->isView('Show_aside_left_1')): ?>
+                    <? Component::Menu(["NAME" => $obPage->getProp('aside-left-1-name'), 'template' => 'aside_left_1', 'ROOT_MENU_TYPE' => 'aside-left-1',]); ?>
+                <? endif; ?>
+                <? if ($obPage->isView('Show_aside_left_2')): ?>
+                    <? Component::Menu(["NAME" => $obPage->getProp('aside-left-2-name'), 'template' => 'aside_left_2', 'ROOT_MENU_TYPE' => 'aside-left-2',]); ?>
+                <? endif; ?>
             </div>
-        <? endif; ?>
+        </div>
+        <div class="container">
+            <? endif; ?>

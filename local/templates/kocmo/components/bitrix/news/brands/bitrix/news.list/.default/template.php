@@ -12,7 +12,7 @@
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
 
-if(count($arResult['ITEMS']) && false){
+if(count($arResult['ITEMS'])){
 
     $cache = Bitrix\Main\Data\Cache::createInstance();
     $ids = '';

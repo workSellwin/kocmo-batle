@@ -8,6 +8,7 @@ class Basket
 
     use InitMainTrait;
     public static $BASKET;
+    public $SITE_ID;
 
     public function __construct()
     {
@@ -47,6 +48,11 @@ class Basket
         }
     }
 
+    /**
+     * Получение продуктов из карзины
+     * @return array
+     * @throws \Bitrix\Main\ArgumentException
+     */
     public static function getProductBasket(){
 
         $basketRes = Sale\Internals\BasketTable::getList(array(
@@ -62,6 +68,44 @@ class Basket
             $res[]=$item;
         }
         return $res;
+    }
+
+    /**
+     * Удаление продукта из карзины
+     * @param $PRODUCT_ID
+     * @return bool
+     */
+    public static function delBasket($PRODUCT_ID){
+        if($r = CSaleBasket::Delete($PRODUCT_ID))return $r;
+            return false;
+    }
+
+    /**
+     * Обновление полей записи корзины
+     * @param $PRODUCT_ID
+     * @param $FIELDS - массив волей и их значение
+     */
+    public static function updateProductBasket($PRODUCT_ID, $FIELDS){
+        $basketItems = self::$BASKET->getBasketItems();
+        foreach ($basketItems as $item){
+            if($item->getProductId() == $PRODUCT_ID){
+                //Изменение полей (поля записи корзины)
+                $item->setFields(
+                    $FIELDS
+                );
+                // Сохранение изменения
+                if($item->save())return true;
+                    return false;
+            }
+        }
+
+    }
+
+    /**
+     *Создаём корзину
+     */
+    public static function create($siteId = 's1'){
+        return Basket::create($siteId);
     }
 
 }

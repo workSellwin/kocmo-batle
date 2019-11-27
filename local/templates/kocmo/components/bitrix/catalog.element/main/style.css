@@ -11,3 +11,7 @@
 .product__submit {
     height: 55px;
 }
+.product__slider-thumbs-item img{
+    display: block;
+    margin: 0 auto;
+}

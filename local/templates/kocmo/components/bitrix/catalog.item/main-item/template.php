@@ -1,31 +1,12 @@
-<?
-
-use \Lui\Kocmo\Catalog;
-$elemPrepara = new Catalog\ElementPrepara($arResult);
-
-
-$arImg = $arResult['ITEM']['PREVIEW_PICTURE'] ? $arResult['ITEM']['PREVIEW_PICTURE'] : $arResult['ITEM']['DETAIL_PICTURE'] ? $arResult['ITEM']['DETAIL_PICTURE'] : [];
-$file_img = [];
-if ($arImg) {
-    $file_img = CFile::ResizeImageGet($arImg, array('width' => 290, 'height' => 226), BX_RESIZE_IMAGE_PROPORTIONAL, true);
-}
-
-
-$minPriceOffer = $elemPrepara->getMinPriceOffers();
-$PROP = $elemPrepara->getProp();
-$countOffers = $elemPrepara->getCauntOffers();
-
-$prop = array_column($arResult['ITEM']['PROPERTIES'], '~VALUE', 'CODE');
-?>
 
 <div class="<?= $arResult['CLASS'] ?>">
     <a href="<?= $arResult['ITEM']['DETAIL_PAGE_URL'] ?>" class="products-item__img-wrap"
        style="width: 100%; height: 226px">
         <div class="products-item__labels">
-            <? if ($minPriceOffer['PERCENT']): ?>
-                <div class="products-item__label products-item__label--sale">-<?= $minPriceOffer['PERCENT'] ?>%</div>
+            <? if ($arResult['minPriceOffer']['PERCENT']): ?>
+                <div class="products-item__label products-item__label--sale">-<?= $arResult['minPriceOffer']['PERCENT'] ?>%</div>
             <? endif; ?>
-            <? if ($PROP['NEWPRODUCT']): ?>
+            <? if ($arResult['PROP']['NEWPRODUCT']): ?>
                 <div class="products-item__label products-item__label--new">new</div>
             <? endif; ?>
             <div class="products-item__label--add" style="display: none">
@@ -35,14 +16,16 @@ $prop = array_column($arResult['ITEM']['PROPERTIES'], '~VALUE', 'CODE');
             </div>
         </div>
         <!-- 290px x 226px -->
-        <img src="<?= $file_img['src'] ? $file_img['src'] : KOCMO_TEMPLATE_PATH . '/images/temp/product.jpg' ?>"
+        <img src="<?= $arResult['file_img']['src'] ? $arResult['file_img']['src'] : KOCMO_TEMPLATE_PATH . '/images/temp/product.jpg' ?>"
              width="290" height="226" class="products-item__img"
              alt="">
     </a>
     <div class="products-item__title-wrap">
-        <a href="<?= $arResult['ITEM']['DETAIL_PAGE_URL'] ?>" class="products-item__title"><?= $prop['MARKA'] ?></a>
-        <a href="<?= $arResult['ITEM']['DETAIL_PAGE_URL'] ?>" class="products-item__options"><?= $countOffers ?>
-            вариантов</a>
+        <a href="<?= $arResult['MARKA_BRAND']['DETAIL_PAGE_URL'] ?>" class="products-item__title"><?= $arResult['MARKA_BRAND']['NAME'] ?></a>
+        <?if ($arResult['countOffers']): ?>
+            <a href="<?= $arResult['ITEM']['DETAIL_PAGE_URL'] ?>"
+               class="products-item__options"><?= $arResult['countOffers'] ? $arResult['countOffers'] . ' вариантов' : '' ?></a>
+        <? endif; ?>
     </div>
     <div class="products-item__description">
         <?= $arResult['ITEM']['NAME'] ?>
@@ -79,31 +62,43 @@ $prop = array_column($arResult['ITEM']['PROPERTIES'], '~VALUE', 'CODE');
                     "HIDE_ICONS" => "Y"
                 )
             ); ?>
-           <?/* <img src="/assets/images/temp/stars.png" alt="">*/?>
+            <? /* <img src="/assets/images/temp/stars.png" alt="">*/ ?>
         </div>
-        <? if ($prop['COUNT_REVIEWS']) { ?><a href="#" class="products-item__reviews-lnk"><?= $prop['COUNT_REVIEWS'] ?>
-            отзыва</a><? } ?>
+        <? if ($arResult['prop']['COUNT_REVIEWS']): ?>
+            <a href="#" class="products-item__reviews-lnk"><?= $arResult['prop']['COUNT_REVIEWS'] ?>
+                отзыва</a>
+        <? endif; ?>
     </div>
     <div class="products-item__price-wrap">
-        <? if ($minPriceOffer['DISCOUNT'] != 0): ?>
-            <div class="products-item__price"><?= number_format($minPriceOffer['BASE_PRICE'], 2, '.', ' '); ?>
+        <? if ($arResult['minPriceOffer']['DISCOUNT'] != 0): ?>
+            <div class="products-item__price"><?= number_format($arResult['minPriceOffer']['PRICE_NEW'], 2, '.', ' '); ?>
                 <span> руб</span></div>
-            <div class="products-item__old-price"><?= number_format($minPriceOffer['PRICE'], 2, '.', ' '); ?>
+            <div class="products-item__old-price"><?= number_format($arResult['minPriceOffer']['PRICE_OLD'], 2, '.', ' '); ?>
                 <span> руб</span></div>
         <? else: ?>
-            <div class="products-item__price"><?= number_format($minPriceOffer['PRICE'], 2, '.', ' '); ?>
+            <div class="products-item__price"><?= number_format($arResult['minPriceOffer']['PRICE_NEW'], 2, '.', ' '); ?>
                 <span> руб</span></div>
         <? endif; ?>
 
     </div>
     <div class="products-item__btns">
-        <a href="#" class="btn btn--transparent products-item__add">
+        <a href="#"
+           id="<?=$arResult['ID']?>"
+           onclick="productsItemAdd(<?= $arResult['minPriceOffer']['PRODUCT_ID'] ?>);return false"
+           class="btn btn--transparent products-item__add prod-items-id_<?= $arResult['minPriceOffer']['PRODUCT_ID'] ?> "
+           data-prod-id="<?= $arResult['minPriceOffer']['PRODUCT_ID'] ?>">
             <svg width="25" height="25">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#svg-basket"></use>
             </svg>
-            В корзину
+            <?if($arResult['QUANTITY'] > 0):?>
+                <span><?= $arResult['IS_BASKET'] == 'N' ? 'В корзину' : 'Перейти в корзину' ?></span>
+            <?else:?>
+                <span>Предзаказ</span>
+            <?endif;?>
+
         </a>
-        <a data-id="<?=$arResult['ITEM']['ID']?>" href="#" class="btn btn--transparent h2o_add_favor products-item__wishlist">
+        <a data-id="<?= $arResult['ITEM']['ID'] ?>" href="#"
+           class="btn btn--transparent h2o_add_favor products-item__wishlist">
             <svg width="25" height="25">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#svg-heart"></use>
             </svg>

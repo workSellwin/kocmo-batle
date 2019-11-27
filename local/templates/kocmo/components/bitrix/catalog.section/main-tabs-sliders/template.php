@@ -144,7 +144,12 @@ $generalParams = array(
 
 $obName = 'ob' . preg_replace('/[^a-zA-Z0-9_]/', 'x', $this->GetEditAreaId($navParams['NavNum']));
 $containerName = 'container-' . $navParams['NavNum']; ?>
-<?if(!empty($arResult['ITEM_ROWS'])):?>
+<?if(!empty($arResult['ITEM_ROWS'])):
+    $basket = new Basket();
+    $arProd = $basket::getProductBasket();
+    $arProd = array_column($arProd, 'PRODUCT_ID', 'PRODUCT_ID');
+
+    ?>
     <?$this->SetViewTarget('tabs-sliders');?>
         <?$TabsSlide = getDataMainTabsSlider()[$arParams['TabsSliderKey']];?>
         <span data-id="<?=$TabsSlide['ID']?>" class="tab js_tab <?=$TabsSlide['ACTIVE']?>"><?=$TabsSlide['NAME']?></span>
@@ -183,6 +188,7 @@ $containerName = 'container-' . $navParams['NavNum']; ?>
                             "BIG_BUTTONS" => "Y",
                             "SCALABLE" => "N",
                             'CLASS' => 'swiper-slide products-item',
+                            'ADD_BASKET' => $arProd,
                         ),
                         "PARAMS" => $generalParams + array("SKU_PROPS" => $arResult["SKU_PROPS"][$item["IBLOCK_ID"]])
                     ),

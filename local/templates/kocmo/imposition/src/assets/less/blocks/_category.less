@@ -736,6 +736,27 @@
       letter-spacing: -@letter-spacing;
       color: #313131;
       margin-bottom: 12px;
+
+      @media @tabletMedia {
+        padding: 1px 0 1px 26px;
+      }
+
+      &::before {
+        @media @tabletMedia {
+          top: 0;
+        }
+      }
+    }
+  }
+
+  &__item-inner--scroll {
+    max-height: 200px;
+    overflow-y: auto;
+    width: 128px;
+
+    @media @tabletMedia {
+      width: auto;
+      margin-top: 20px;
     }
   }
 

@@ -1,8 +1,8 @@
 <?
 
-use Bitrix\Main\Type\Collection;
 use Bitrix\Currency\CurrencyTable;
 use Bitrix\Iblock;
+use Bitrix\Main\Type\Collection;
 
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
 //PR($arResult);
@@ -576,7 +576,7 @@ $res = CIBlockElement::GetList(Array("SORT" => "ASC"), $arFilter, false, false, 
 while ($ar_fields = $res->GetNextElement()) {
     $arFields = $ar_fields->GetFields();
     $arResult['RES']['SHOW_COUNTER'] = $arFields['SHOW_COUNTER'];
-    if($arFields['PROPERTY_MORE_PHOTO_VALUE']){
+    if ($arFields['PROPERTY_MORE_PHOTO_VALUE']) {
         $arResult['RES']['PHOTO_BIG'][] = CFile::ResizeImageGet($arFields['PROPERTY_MORE_PHOTO_VALUE'], array('width' => 545, 'height' => 360), BX_RESIZE_IMAGE_PROPORTIONAL, true);
         $arResult['RES']['PHOTO_SMAL'][] = CFile::ResizeImageGet($arFields['PROPERTY_MORE_PHOTO_VALUE'], array('width' => 82, 'height' => 54), BX_RESIZE_IMAGE_PROPORTIONAL, true);
     }
@@ -600,59 +600,108 @@ $arResult['RES']['PANET_TEXT'] = [
     ],
 ];
 
+
+
+
+
 $HB = new highloadApi(1);
+
 $basket = new Basket();
 $arProd = $basket::getProductBasket();
 $arProd = array_column($arProd, 'PRODUCT_ID', 'PRODUCT_ID');
 
-$arResult['dataOffers'][$arResult['ID']]['ID']=$arResult['ID'];
-$arResult['dataOffers'][$arResult['ID']]['NAME']=$arResult['NAME'];
-$arResult['dataOffers'][$arResult['ID']]['CODE']=$arResult['CODE'];
-$arResult['dataOffers'][$arResult['ID']]['ARTNUMBER']=$arResult['PROPERTIES']['ARTNUMBER']['VALUE'];
-$arResult['dataOffers'][$arResult['ID']]['QUANTITY']=$arResult['CATALOG_QUANTITY'] ? $arResult['CATALOG_QUANTITY'] : 0 ;
-$arResult['dataOffers'][$arResult['ID']]['PRICE']=$arResult['ITEM_PRICES'][0] ;
-$arResult['dataOffers'][$arResult['ID']]['PREVIEW_TEXT']=$arResult['PREVIEW_TEXT'];
-$arResult['dataOffers'][$arResult['ID']]['ADD_BASKET']= $arProd[$arResult['ID']] ? 'Y' : 'N' ;;
+global $OBJ_ITEMS;
 
-foreach ($arResult['OFFERS'] as &$value){
+$elemPrice = ElementPrice::getElementPrice($arResult['ID']);
+$arResult['elemPrice'] = $elemPrice;
+
+$arResult['dataOffers'][$arResult['ID']]['ID'] = $arResult['ID'];
+$arResult['dataOffers'][$arResult['ID']]['NAME'] = $arResult['NAME'];
+$arResult['dataOffers'][$arResult['ID']]['CODE'] = $arResult['CODE'];
+$arResult['dataOffers'][$arResult['ID']]['ARTNUMBER'] = $arResult['PROPERTIES']['ARTNUMBER']['VALUE'];
+$arResult['dataOffers'][$arResult['ID']]['QUANTITY'] = $arResult['CATALOG_QUANTITY'] ? $arResult['CATALOG_QUANTITY'] : 0;
+
+$arResult['dataOffers'][$arResult['ID']]['PRICE']['DISCOUNT'] = $arResult['elemPrice']['DISCOUNT'] ? $arResult['elemPrice']['DISCOUNT'] : 0;
+$arResult['dataOffers'][$arResult['ID']]['PRICE']['PRICE_OLD'] = $arResult['elemPrice']['PRICE_OLD'] ? $arResult['elemPrice']['PRICE_OLD'] : 0;
+$arResult['dataOffers'][$arResult['ID']]['PRICE']['PERCENT'] = $arResult['elemPrice']['PERCENT'] ? $arResult['elemPrice']['PERCENT'] : 0;
+$arResult['dataOffers'][$arResult['ID']]['PRICE']['PRICE_NEW'] = $arResult['elemPrice']['PRICE_NEW'] ? $arResult['elemPrice']['PRICE_NEW'] : 0;
+
+$arResult['dataOffers'][$arResult['ID']]['PREVIEW_TEXT'] = $arResult['PREVIEW_TEXT'];
+$arResult['dataOffers'][$arResult['ID']]['ADD_BASKET'] = $arProd[$arResult['ID']] ? 'Y' : 'N';;
+
+foreach ($arResult['OFFERS'] as &$value) {
+
+    $offerPrice = ElementPrice::getElementPrice($value['ID']);
+
     $elemHB = $HB->getElementHighload(array('UF_XML_ID' => $value['PROPERTIES']['COLOR_REF']['VALUE']));
-    $value['OFFERS_IMG'] =  CFile::ResizeImageGet($elemHB[0]['UF_FILE'], array('width' => 33, 'height' => 33), BX_RESIZE_IMAGE_PROPORTIONAL, true);
-    $arResult['dataOffers'][$value['ID']]['ID']=$value['ID'];
-    $arResult['dataOffers'][$value['ID']]['NAME']=$value['NAME'];
-    $arResult['dataOffers'][$value['ID']]['CODE']=$value['CODE'];
-    $arResult['dataOffers'][$value['ID']]['ARTNUMBER']=$value['PROPERTIES']['ARTNUMBER']['VALUE'];
-    $arResult['dataOffers'][$value['ID']]['QUANTITY']=$value['PRODUCT']['QUANTITY'] ? $value['PRODUCT']['QUANTITY'] : 0 ;
-    $arResult['dataOffers'][$value['ID']]['PREVIEW_TEXT']=$value['PREVIEW_TEXT'];
-    $arResult['dataOffers'][$value['ID']]['ADD_BASKET']= $arProd[$value['ID']] ? 'Y' : 'N' ;
+    $value['OFFERS_IMG'] = CFile::ResizeImageGet($elemHB[0]['UF_FILE'], array('width' => 33, 'height' => 33), BX_RESIZE_IMAGE_PROPORTIONAL, true);
+    $arResult['dataOffers'][$value['ID']]['ID'] = $value['ID'];
+    $arResult['dataOffers'][$value['ID']]['NAME'] = $value['NAME'];
+    $arResult['dataOffers'][$value['ID']]['CODE'] = $value['CODE'];
+    $arResult['dataOffers'][$value['ID']]['ARTNUMBER'] = $value['PROPERTIES']['ARTNUMBER']['VALUE'];
+    $arResult['dataOffers'][$value['ID']]['QUANTITY'] = $value['PRODUCT']['QUANTITY'] ? $value['PRODUCT']['QUANTITY'] : 0;
+    $arResult['dataOffers'][$value['ID']]['PREVIEW_TEXT'] = $value['PREVIEW_TEXT'];
+    $arResult['dataOffers'][$value['ID']]['ADD_BASKET'] = $arProd[$value['ID']] ? 'Y' : 'N';
+    $arResult['dataOffers'][$value['ID']]['PRICE']['DISCOUNT'] = $offerPrice['DISCOUNT'] ? $offerPrice['DISCOUNT'] : 0;
+    $arResult['dataOffers'][$value['ID']]['PRICE']['PRICE_OLD'] = $offerPrice['PRICE_OLD'] ? $offerPrice['PRICE_OLD'] : 0;
+    $arResult['dataOffers'][$value['ID']]['PRICE']['PERCENT'] = $offerPrice['PERCENT'] ? $offerPrice['PERCENT'] : 0;
+    $arResult['dataOffers'][$value['ID']]['PRICE']['PRICE_NEW'] = $offerPrice['PRICE_NEW'] ? $offerPrice['PRICE_NEW'] : 0;
 
-    $arResult['dataOffers'][$value['ID']]['PRICE']['DISCOUNT'] = $value['ITEM_PRICES'][0] ? $value['ITEM_PRICES'][0]['DISCOUNT'] : 0;
-    $arResult['dataOffers'][$value['ID']]['PRICE']['BASE_PRICE'] = $value['ITEM_PRICES'][0] ? $value['ITEM_PRICES'][0]['BASE_PRICE'] : 0;
-    $arResult['dataOffers'][$value['ID']]['PRICE']['PERCENT'] = $value['ITEM_PRICES'][0] ? $value['ITEM_PRICES'][0]['PERCENT'] : 0;
-    $arResult['dataOffers'][$value['ID']]['PRICE']['PRICE'] = $value['ITEM_PRICES'][0] ? $value['ITEM_PRICES'][0]['PRICE'] : 0;
+
+    /*
+    $IS_BASKET = $arProd[$value['ID']] ? 'Y' : 'N' ;
+    $QUANTITY = $value['PRODUCT']['QUANTITY'] ? $value['PRODUCT']['QUANTITY'] : 0 ;
+    $TEXT = 'В корзину';
+    if($IS_BASKET == 'Y'){
+        $TEXT = 'Перейти в корзину';
+    }
+    if($IS_OFFERS == 'Y'){
+        $TEXT = 'В карточку';
+    }
+
+
+    $OBJ_ITEMS['OBJ_ITEM'][$value['ID']]['PRODUCT_ID'] = $value['ID'];
+    $OBJ_ITEMS['OBJ_ITEM'][$value['ID']]['minPriceOffer'] = $offerPrice;
+    $OBJ_ITEMS['OBJ_ITEM'][$value['ID']]['IS_BASKET'] = $IS_BASKET;
+    $OBJ_ITEMS['OBJ_ITEM'][$value['ID']]['IS_OFFERS'] = 'N';
+    $OBJ_ITEMS['OBJ_ITEM'][$value['ID']]['QUANTITY'] = $QUANTITY;
+    $OBJ_ITEMS['OBJ_ITEM'][$value['ID']]['IS_URL'] = '/cart/' ;
+    $OBJ_ITEMS['OBJ_ITEM'][$value['ID']]['URL_CART'] = '/cart/' ;
+    $OBJ_ITEMS['OBJ_ITEM'][$value['ID']]['URL_DETAIL'] = $arResult['DETAIL_PAGE_URL'] ;
+    $OBJ_ITEMS['OBJ_ITEM'][$value['ID']]['BTN_TEXT'] = $TEXT;*/
+
+
 }
+
+//unset($_SESSION['BASKET_PRODUCT_ADD']);
 
 
 $arSelect = Array("ID", "NAME", 'IBLOCK_ID', "DATE_ACTIVE_FROM", 'PROPERTY_PROD', 'PREVIEW_PICTURE', 'DETAIL_PAGE_URL');
-$arFilter = Array("IBLOCK_ID"=>5, "ACTIVE"=>"Y", 'PROPERTY_PROD' => $arResult['ID'] );
+$arFilter = Array("IBLOCK_ID" => 5, "ACTIVE" => "Y", 'PROPERTY_PROD' => $arResult['ID']);
 $res = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
-while($ob = $res->GetNext())
-{
-    if($ob['PROPERTY_PROD_VALUE'] == $arResult['ID'] && $ob['PREVIEW_PICTURE']){
+while ($ob = $res->GetNext()) {
+    if ($ob['PROPERTY_PROD_VALUE'] == $arResult['ID'] && $ob['PREVIEW_PICTURE']) {
         $arResult['SALES']['BANNER_IMG'] = CFile::GetPath($ob['PREVIEW_PICTURE']);
         $arResult['SALES']['BANNER_URL'] = $ob['DETAIL_PAGE_URL'];
         break;
     }
 }
 
+if ($arResult['PROPERTIES']['MARKA']['VALUE']) {
+    $arSelect = Array("ID", "NAME", "CODE", "DETAIL_PAGE_URL", "PREVIEW_PICTURE");
+    $arFilter = Array("IBLOCK_ID" => 7, 'NAME' => trim($arResult['PROPERTIES']['MARKA']['VALUE']));
+    $res = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
+    while ($ob = $res->GetNext()) {
+        $arResult['MARKA_BRAND'] = $ob;
+        $arResult['MARKA_BRAND']['PREVIEW_PICTURE'] = CFile::GetPath($ob["PREVIEW_PICTURE"]);
+    }
+}
 
-/*global $APPLICATION;
+$arResult['NAME_DISCOUNT'] = '';
+$ob = new \Lui\Kocmo\BD\HB\ActionItems();
+if ($arData = $ob->GetProduct($arResult['ID'])) {
+    $arData = reset($arData);
+    $name = $arData['UF_DESCRIPTION'];
+    $arResult['NAME_DISCOUNT'] = $name;
+}
 
-$cp = $this->__component; // объект компонента
-
-if (is_object($cp))
-{
-    // добавим в arResult компонента два поля - MY_TITLE и IS_OBJECT
-    $cp->arResult['dataOffers'] = $arResult['dataOffers'];
-    // сохраним их в копии arResult, с которой работает шаблон
-    $arResult['dataOffers'] = $cp->arResult['dataOffers'];
-}*/

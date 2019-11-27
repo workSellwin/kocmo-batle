@@ -13,7 +13,7 @@
 
 $this->setFrameMode(true);
 $maxLIne = 10;
-if(!file_exists('StartSubColumn')){
+if (!file_exists('StartSubColumn')) {
     function StartSubColumn($maxLIne, $thisLine)
     {
         if ($thisLine % $maxLIne == 0) echo "<div class=\"nav-dropdown__sub-column\">";
@@ -35,6 +35,8 @@ if(!file_exists('StartSubColumn')){
 <div class="header__bottom">
     <div class="container header__bottom-inner">
         <ul class="nav">
+            <li class="nav__item"><a class="nav__lnk" href="/sales/">Акции</a></li>
+            <li class="nav__item"><a class="nav__lnk" href="/catalog/?filter_sort=sort_increase&set_filter=y&filter_catalog_prod_54_2553136946=Y">Новинки</a></li>
             <? foreach ($arResult as $arMenuL1) { ?>
                 <? $active = $arMenuL1['SELECTED'] ? 'active' : ''; ?>
                 <li class="nav__item <?= $active ?>">
@@ -61,11 +63,11 @@ if(!file_exists('StartSubColumn')){
                                 <? } ?>
                                 <? EndFinishSubColumn($maxLIne, $thisLine); ?>
                             </div>
-                            <? if ($arMenuL1['INFO']['PICTURE']) { ?>
-                                <div class="nav-dropdown__img">
+                            <div class="nav-dropdown__img">
+                                <? if ($arMenuL1['INFO']['PICTURE']) { ?>
                                     <img src="<?= $arMenuL1['INFO']['PICTURE'] ?>" alt="<?= $arMenuL1['TEXT'] ?>">
-                                </div>
-                            <? } ?>
+                                <? } ?>
+                            </div>
                             <? if ($arMenuL1['INFO']['BRAND']) { ?>
                                 <div class="nav-dropdown__brands">
                                     <div class="nav-dropdown__title">Бренды <?= $arMenuL1['TEXT'] ?></div>
@@ -74,7 +76,7 @@ if(!file_exists('StartSubColumn')){
                                             <div class="nav-dropdown__brands-letter"><?= $l ?></div>
                                             <div class="nav-dropdown__brands-group">
                                                 <? foreach ($brands as $brand) { ?>
-                                                    <a href="#"
+                                                    <a href="<?= $brand['URL'] ?>"
                                                        class="nav-dropdown__brands-lnk"><?= $brand['NAME'] ?></a>
                                                 <? } ?>
                                             </div>
@@ -86,6 +88,7 @@ if(!file_exists('StartSubColumn')){
                     <? } ?>
                 </li>
             <? } ?>
+            <li class="nav__item"><a class="nav__lnk" href="/brands/">Бренды</a></li>
         </ul>
     </div>
 </div>

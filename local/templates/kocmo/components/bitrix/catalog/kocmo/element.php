@@ -19,11 +19,12 @@ use Bitrix\Main\ModuleManager;
 $this->setFrameMode(true); ?>
 
 </div>
+
 <? $elementId = $APPLICATION->IncludeComponent(
     'bitrix:catalog.element',
     'main',
     array(
-      //  'SESI' => $_SESSION,
+        //  'SESI' => $_SESSION,
         'USER_GROUP' => $USER->GetUserGroupArray(),
         'IBLOCK_TYPE' => $arParams['IBLOCK_TYPE'],
         'IBLOCK_ID' => $arParams['IBLOCK_ID'],
@@ -178,6 +179,7 @@ $this->setFrameMode(true); ?>
 );
 
 
+
 $cookie = Cookies::getCookies('YOU_WATCHED');
 if ($cookie) {
     $cookie = explode('|', $cookie);
@@ -198,7 +200,7 @@ if ($cookie) {
 
 $cookie = Cookies::getCookies('YOU_WATCHED');
 $cookie = explode('|', $cookie);
-if(in_array($elementId ,$cookie)){
+if (in_array($elementId, $cookie)) {
     $cookie = array_flip($cookie);
     unset($cookie[$elementId]);
     $cookie = array_flip($cookie);
@@ -224,10 +226,10 @@ while ($ob = $res->GetNext()) {
 
     <div class="tabs">
         <? if (!empty($arResult['WITH_PRODUCT_BUY'])): ?>
-            <span data-id="related" class="tab tab--dotted js_tab active">С этим товаром покупают</span>
+            <span data-id="related" class="tab tab--dotted js_tab ">С этим товаром покупают</span>
         <? endif; ?>
         <? if (!empty($cookie)): ?>
-            <span data-id="recently" class="tab tab--dotted js_tab">ВЫ ПРОСМАТРИВАЛИ</span>
+            <span data-id="recently" class="tab tab--dotted js_tab active">ВЫ ПРОСМАТРИВАЛИ</span>
         <? endif; ?>
         <? if (!empty($arResult['RECOMMEND'])): ?>
             <span data-id="recommendations" class="tab tab--dotted js_tab">РЕКОМЕНДУЕМЫЕ</span>
@@ -237,7 +239,7 @@ while ($ob = $res->GetNext()) {
     <div class="panels">
 
         <? if (!empty($arResult['WITH_PRODUCT_BUY'])): ?>
-            <div data-id="related" class="panel js_panel active">
+            <div data-id="related" class="panel js_panel ">
                 <? global $arrFilterRelated;
                 $arrFilterRelated['ID'] = $arResult['WITH_PRODUCT_BUY'];
                 $APPLICATION->IncludeComponent("bitrix:catalog.section", "prod-tabs-sliders", Array(
@@ -279,7 +281,7 @@ while ($ob = $res->GetNext()) {
                     "ENLARGE_PRODUCT" => "STRICT",    // Выделять товары в списке
                     "FILTER_NAME" => "arrFilterRelated",    // Имя массива со значениями фильтра для фильтрации элементов
                     "HIDE_NOT_AVAILABLE" => "L",    // Недоступные товары
-                    "HIDE_NOT_AVAILABLE_OFFERS" => "Y",    // Недоступные торговые предложения
+                    "HIDE_NOT_AVAILABLE_OFFERS" => "N",    // Недоступные торговые предложения
                     "IBLOCK_ID" => "2",    // Инфоблок
                     "IBLOCK_TYPE" => "catalog",    // Тип инфоблока
                     "INCLUDE_SUBSECTIONS" => "Y",    // Показывать элементы подразделов раздела
@@ -369,7 +371,7 @@ while ($ob = $res->GetNext()) {
 
         <?
         if (!empty($cookie)): ?>
-            <div data-id="recently" class="panel js_panel">
+            <div data-id="recently" class="panel js_panel active">
                 <? global $arrFilterRecently;
                 $arrFilterRecently['ID'] = $cookie;
                 $APPLICATION->IncludeComponent("bitrix:catalog.section", "prod-tabs-sliders", Array(
@@ -411,7 +413,7 @@ while ($ob = $res->GetNext()) {
                     "ENLARGE_PRODUCT" => "STRICT",    // Выделять товары в списке
                     "FILTER_NAME" => "arrFilterRecently",    // Имя массива со значениями фильтра для фильтрации элементов
                     "HIDE_NOT_AVAILABLE" => "L",    // Недоступные товары
-                    "HIDE_NOT_AVAILABLE_OFFERS" => "Y",    // Недоступные торговые предложения
+                    "HIDE_NOT_AVAILABLE_OFFERS" => "N",    // Недоступные торговые предложения
                     "IBLOCK_ID" => "2",    // Инфоблок
                     "IBLOCK_TYPE" => "catalog",    // Тип инфоблока
                     "INCLUDE_SUBSECTIONS" => "Y",    // Показывать элементы подразделов раздела
@@ -502,6 +504,8 @@ while ($ob = $res->GetNext()) {
 
         <? if (!empty($arResult['RECOMMEND'])): ?>
             <div data-id="recommendations" class="panel js_panel">
+
+
                 <? global $arrFilterRelated2;
                 $arrFilterRelated2['ID'] = $arResult['RECOMMEND'];
                 $APPLICATION->IncludeComponent("bitrix:catalog.section", "prod-tabs-sliders", Array(
@@ -543,7 +547,7 @@ while ($ob = $res->GetNext()) {
                     "ENLARGE_PRODUCT" => "STRICT",    // Выделять товары в списке
                     "FILTER_NAME" => "arrFilterRelated2",    // Имя массива со значениями фильтра для фильтрации элементов
                     "HIDE_NOT_AVAILABLE" => "L",    // Недоступные товары
-                    "HIDE_NOT_AVAILABLE_OFFERS" => "Y",    // Недоступные торговые предложения
+                    "HIDE_NOT_AVAILABLE_OFFERS" => "N",    // Недоступные торговые предложения
                     "IBLOCK_ID" => "2",    // Инфоблок
                     "IBLOCK_TYPE" => "catalog",    // Тип инфоблока
                     "INCLUDE_SUBSECTIONS" => "Y",    // Показывать элементы подразделов раздела
@@ -634,50 +638,145 @@ while ($ob = $res->GetNext()) {
 </div>
 
 
-<? global $AVERAGE_RATING;
+<?
+if ($USER->IsAuthorized()):
 
-$AVERAGE_RATING = round($AVERAGE_RATING);
-$sort_comment = new sortConfig('COMMENT_SORT');
-$sort_name = $sort_comment->getSortConfig()['TEMPLATE_ID'];
-if (isset($_REQUEST[$sort_name]) && !empty($_REQUEST[$sort_name])) {
-    $sort_comment->setSessionSortConfig($sort_name, 'ACTIVE_FROM', $_REQUEST[$sort_name]);
-}
-$sort_com = $sort_comment->getSortConfig()['SESSION'][$sort_name] ? $sort_comment->getSortConfig()['SESSION'][$sort_name] : $sort_comment->getSortConfig()['DEFAULT'];
+    global $AVERAGE_RATING;
 
-?>
-<div class="reviews" id="reviews">
-    <div class="container">
-        <div class="reviews__title">Отзывы:</div>
-        <div class="reviews__header">
+    $AVERAGE_RATING = round($AVERAGE_RATING);
+    $sort_comment = new sortConfig('COMMENT_SORT');
+    $sort_name = $sort_comment->getSortConfig()['TEMPLATE_ID'];
+    if (isset($_REQUEST[$sort_name]) && !empty($_REQUEST[$sort_name])) {
+        $sort_comment->setSessionSortConfig($sort_name, 'ACTIVE_FROM', $_REQUEST[$sort_name]);
+    }
+    $sort_com = $sort_comment->getSortConfig()['SESSION'][$sort_name] ? $sort_comment->getSortConfig()['SESSION'][$sort_name] : $sort_comment->getSortConfig()['DEFAULT'];
 
-            <div class="reviews__average-rate">
-                Средний рейтинг <?= $AVERAGE_RATING ?> из 5
-            </div>
+    ?>
+    <div class="reviews" id="reviews">
+        <div class="container">
+            <div class="reviews__title">Отзывы:</div>
+            <div class="reviews__header">
 
-            <div class="reviews__views-wrap">
-                <div class="reviews__views-rate">
-                    <div class="bx-rating">
-                        <? for ($i = 1; $i <= 5; $i++):
-                            if ($i <= $AVERAGE_RATING):
-                                $className = "fa fa-star reviews-prod";
-                            else:
-                                $className = "fa fa-star-o reviews-prod";
-                            endif; ?>
-                            <i class="<? echo $className ?>"
-                               title="<? echo $name ?>">
-                            </i>
-                        <? endfor; ?>
+                <div class="reviews__average-rate">
+                    Средний рейтинг <?= $AVERAGE_RATING ?> из 5
+                </div>
+
+                <div class="reviews__views-wrap">
+                    <div class="reviews__views-rate">
+                        <div class="bx-rating">
+                            <? for ($i = 1; $i <= 5; $i++):
+                                if ($i <= $AVERAGE_RATING):
+                                    $className = "fa fa-star reviews-prod";
+                                else:
+                                    $className = "fa fa-star-o reviews-prod";
+                                endif; ?>
+                                <i class="<? echo $className ?>"
+                                   title="<? echo $name ?>">
+                                </i>
+                            <? endfor; ?>
+                        </div>
+                        <span>5 отзывов</span>
                     </div>
-                    <span>5 отзывов</span>
+
+                    <div class="reviews__views-view">
+                        <span class="product__view-watched-ico"></span>
+                        <div style="display: inline-block">0</div>&nbsp;просмотров
+                    </div>
                 </div>
 
-                <div class="reviews__views-view">
-                    <span class="product__view-watched-ico"></span>
-                    <div style="display: inline-block">0</div>&nbsp;просмотров
+                <div class="custom-select-wrap reviews__select reviews__select--desktop">
+                    <span class="category-filter__sort-title">Сортировать по:</span>
+                    <select name="<?= $sort_name ?>" class="js_custom-filter-select">
+                        <? foreach ($sort_comment->getSortConfig()['SORT'] as $key => $sort): ?>
+                            <option <?= $sort_com['CODE'] == $sort['CODE'] && $sort_com['VALUE'] == $sort['VALUE'] ? 'selected' : '' ?>
+                                    value="<?= $sort['VALUE'] ?>"><?= $sort['NAME'] ?></option>
+                        <? endforeach; ?>
+                    </select>
                 </div>
+
+                <button class="reviews__send-review js_reviews__send-review btn">НАПИСАТЬ свой отзыв</button>
             </div>
 
-            <div class="custom-select-wrap reviews__select reviews__select--desktop">
+
+            <? $APPLICATION->IncludeComponent(
+                "bh:feedback.form",
+                "comment_form",
+                array(
+                    "PROD_ID" => $elementId,
+                    "ACTIVE_ELEMENT" => "N",
+                    "ADD_HREF_LINK" => "Y",
+                    "ADD_LEAD" => "N",
+                    "ALX_LINK_POPUP" => "N",
+                    "BBC_MAIL" => "",
+                    "CATEGORY_SELECT_NAME" => "Выберите категорию",
+                    "CHECKBOX_TYPE" => "CHECKBOX",
+                    "CHECK_ERROR" => "N",
+                    "COLOR_SCHEME" => "BRIGHT",
+                    "EVENT_TYPE" => "ALX_FEEDBACK_FORM",
+                    "FB_TEXT_NAME" => "",
+                    "FB_TEXT_SOURCE" => "PREVIEW_TEXT",
+                    "FORM_ID" => "FORM_COMMENT",
+                    "IBLOCK_ID" => "6",
+                    "IBLOCK_TYPE" => "altasib_feedback",
+                    "INPUT_APPEARENCE" => array(
+                        0 => "DEFAULT",
+                    ),
+                    "JQUERY_EN" => "jquery",
+                    "LINK_SEND_MORE_TEXT" => "Отправить ещё одно сообщение",
+                    "LOCAL_REDIRECT_ENABLE" => "N",
+                    "MASKED_INPUT_PHONE" => array(
+                        0 => "PHONE",
+                    ),
+                    "MESSAGE_OK" => "Ваше сообщение было успешно отправлено",
+                    "NAME_ELEMENT" => "ALX_DATE",
+                    "PROPERTY_FIELDS" => array(
+                        0 => "AGE",
+                        1 => "SKIN_TYPE",
+                        2 => "HAIR_COLOR",
+                        3 => "EYE_COLOR",
+                        4 => "FEEDBACK_TEXT",
+                    ),
+                    "PROPERTY_FIELDS_REQUIRED" => array(
+                        0 => "SKIN_TYPE",
+                        1 => "HAIR_COLOR",
+                        2 => "EYE_COLOR",
+                        3 => "FEEDBACK_TEXT",
+                    ),
+                    "PROPS_AUTOCOMPLETE_EMAIL" => array(
+                        0 => "EMAIL",
+                    ),
+                    "PROPS_AUTOCOMPLETE_NAME" => array(
+                        0 => "FIO",
+                    ),
+                    "PROPS_AUTOCOMPLETE_PERSONAL_PHONE" => array(
+                        0 => "PHONE",
+                    ),
+                    "PROPS_AUTOCOMPLETE_VETO" => "N",
+                    "REQUIRED_SECTION" => "N",
+                    "SECTION_FIELDS_ENABLE" => "N",
+                    "SECTION_MAIL_ALL" => "",
+                    "SEND_IMMEDIATE" => "Y",
+                    "SEND_MAIL" => "N",
+                    "SHOW_LINK_TO_SEND_MORE" => "Y",
+                    "SHOW_MESSAGE_LINK" => "Y",
+                    "SPEC_CHAR" => "N",
+                    "USERMAIL_FROM" => "N",
+                    "USER_CONSENT" => "N",
+                    "USER_CONSENT_ID" => "0",
+                    "USER_CONSENT_INPUT_LABEL" => "",
+                    "USER_CONSENT_IS_CHECKED" => "Y",
+                    "USER_CONSENT_IS_LOADED" => "N",
+                    "USE_CAPTCHA" => "N",
+                    "WIDTH_FORM" => "50%",
+                    "COMPONENT_TEMPLATE" => "comment_form",
+                    "COLOR_THEME" => "",
+                    "COLOR_OTHER" => "#009688"
+                ),
+                false
+            ); ?>
+
+
+            <div class="custom-select-wrap reviews__select reviews__select--mobile">
                 <span class="category-filter__sort-title">Сортировать по:</span>
                 <select name="<?= $sort_name ?>" class="js_custom-filter-select">
                     <? foreach ($sort_comment->getSortConfig()['SORT'] as $key => $sort): ?>
@@ -687,178 +786,93 @@ $sort_com = $sort_comment->getSortConfig()['SESSION'][$sort_name] ? $sort_commen
                 </select>
             </div>
 
-            <button class="reviews__send-review js_reviews__send-review btn">НАПИСАТЬ свой отзыв</button>
+
+            <?
+            global $filter_comment;
+            $filter_comment = array(
+                'PROPERTY_PROD_ID' => $elementId
+            );
+
+
+            $APPLICATION->IncludeComponent(
+                "bitrix:news.list",
+                "comment_prod",
+                array(
+                    "ACTIVE_DATE_FORMAT" => "d.m.Y",
+                    "ADD_SECTIONS_CHAIN" => "Y",
+                    "AJAX_MODE" => "N",
+                    "AJAX_OPTION_ADDITIONAL" => "",
+                    "AJAX_OPTION_HISTORY" => "N",
+                    "AJAX_OPTION_JUMP" => "N",
+                    "AJAX_OPTION_STYLE" => "Y",
+                    "CACHE_FILTER" => "N",
+                    "CACHE_GROUPS" => "N",
+                    "CACHE_TIME" => "3600",
+                    "CACHE_TYPE" => "A",
+                    "CHECK_DATES" => "Y",
+                    "DETAIL_URL" => "",
+                    "DISPLAY_BOTTOM_PAGER" => "Y",
+                    "DISPLAY_DATE" => "Y",
+                    "DISPLAY_NAME" => "Y",
+                    "DISPLAY_PICTURE" => "Y",
+                    "DISPLAY_PREVIEW_TEXT" => "Y",
+                    "DISPLAY_TOP_PAGER" => "N",
+                    "FIELD_CODE" => array(
+                        0 => "DATE_ACTIVE_FROM",
+                        1 => "",
+                    ),
+                    "FILTER_NAME" => "filter_comment",
+                    "HIDE_LINK_WHEN_NO_DETAIL" => "N",
+                    "IBLOCK_ID" => "6",
+                    "IBLOCK_TYPE" => "altasib_feedback",
+                    "INCLUDE_IBLOCK_INTO_CHAIN" => "Y",
+                    "INCLUDE_SUBSECTIONS" => "Y",
+                    "MESSAGE_404" => "",
+                    "NEWS_COUNT" => "5",
+                    "PAGER_BASE_LINK_ENABLE" => "N",
+                    "PAGER_DESC_NUMBERING" => "N",
+                    "PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
+                    "PAGER_SHOW_ALL" => "N",
+                    "PAGER_SHOW_ALWAYS" => "N",
+                    "PAGER_TEMPLATE" => ".default",
+                    "PAGER_TITLE" => "Новости",
+                    "PARENT_SECTION" => "",
+                    "PARENT_SECTION_CODE" => "",
+                    "PREVIEW_TRUNCATE_LEN" => "",
+                    "PROPERTY_CODE" => array(
+                        0 => "AGE",
+                        1 => "USER_ID",
+                        2 => "SKIN_TYPE",
+                        3 => "HAIR_COLOR",
+                        4 => "EYE_COLOR",
+                        5 => "",
+                    ),
+                    "SET_BROWSER_TITLE" => "N",
+                    "SET_LAST_MODIFIED" => "N",
+                    "SET_META_DESCRIPTION" => "N",
+                    "SET_META_KEYWORDS" => "N",
+                    "SET_STATUS_404" => "N",
+                    "SET_TITLE" => "N",
+                    "SHOW_404" => "N",
+                    "SORT_BY1" => $sort_com['CODE'],
+                    "SORT_BY2" => "SORT",
+                    "SORT_ORDER1" => $sort_com['VALUE'],
+                    "SORT_ORDER2" => "DESC",
+                    "STRICT_SECTION_CHECK" => "N",
+                    "COMPONENT_TEMPLATE" => "comment_prod"
+                ),
+                false
+            ); ?>
+
         </div>
-
-
-        <? $APPLICATION->IncludeComponent(
-            "bh:feedback.form",
-            "comment_form",
-            array(
-                "PROD_ID" => $elementId,
-                "ACTIVE_ELEMENT" => "N",
-                "ADD_HREF_LINK" => "Y",
-                "ADD_LEAD" => "N",
-                "ALX_LINK_POPUP" => "N",
-                "BBC_MAIL" => "",
-                "CATEGORY_SELECT_NAME" => "Выберите категорию",
-                "CHECKBOX_TYPE" => "CHECKBOX",
-                "CHECK_ERROR" => "N",
-                "COLOR_SCHEME" => "BRIGHT",
-                "EVENT_TYPE" => "ALX_FEEDBACK_FORM",
-                "FB_TEXT_NAME" => "",
-                "FB_TEXT_SOURCE" => "PREVIEW_TEXT",
-                "FORM_ID" => "FORM_COMMENT",
-                "IBLOCK_ID" => "6",
-                "IBLOCK_TYPE" => "altasib_feedback",
-                "INPUT_APPEARENCE" => array(
-                    0 => "DEFAULT",
-                ),
-                "JQUERY_EN" => "jquery",
-                "LINK_SEND_MORE_TEXT" => "Отправить ещё одно сообщение",
-                "LOCAL_REDIRECT_ENABLE" => "N",
-                "MASKED_INPUT_PHONE" => array(
-                    0 => "PHONE",
-                ),
-                "MESSAGE_OK" => "Ваше сообщение было успешно отправлено",
-                "NAME_ELEMENT" => "ALX_DATE",
-                "PROPERTY_FIELDS" => array(
-                    0 => "AGE",
-                    1 => "SKIN_TYPE",
-                    2 => "HAIR_COLOR",
-                    3 => "EYE_COLOR",
-                    4 => "FEEDBACK_TEXT",
-                ),
-                "PROPERTY_FIELDS_REQUIRED" => array(
-                    0 => "SKIN_TYPE",
-                    1 => "HAIR_COLOR",
-                    2 => "EYE_COLOR",
-                    3 => "FEEDBACK_TEXT",
-                ),
-                "PROPS_AUTOCOMPLETE_EMAIL" => array(
-                    0 => "EMAIL",
-                ),
-                "PROPS_AUTOCOMPLETE_NAME" => array(
-                    0 => "FIO",
-                ),
-                "PROPS_AUTOCOMPLETE_PERSONAL_PHONE" => array(
-                    0 => "PHONE",
-                ),
-                "PROPS_AUTOCOMPLETE_VETO" => "N",
-                "REQUIRED_SECTION" => "N",
-                "SECTION_FIELDS_ENABLE" => "N",
-                "SECTION_MAIL_ALL" => "",
-                "SEND_IMMEDIATE" => "Y",
-                "SEND_MAIL" => "N",
-                "SHOW_LINK_TO_SEND_MORE" => "Y",
-                "SHOW_MESSAGE_LINK" => "Y",
-                "SPEC_CHAR" => "N",
-                "USERMAIL_FROM" => "N",
-                "USER_CONSENT" => "N",
-                "USER_CONSENT_ID" => "0",
-                "USER_CONSENT_INPUT_LABEL" => "",
-                "USER_CONSENT_IS_CHECKED" => "Y",
-                "USER_CONSENT_IS_LOADED" => "N",
-                "USE_CAPTCHA" => "N",
-                "WIDTH_FORM" => "50%",
-                "COMPONENT_TEMPLATE" => "comment_form",
-                "COLOR_THEME" => "",
-                "COLOR_OTHER" => "#009688"
-            ),
-            false
-        ); ?>
-
-
-        <div class="custom-select-wrap reviews__select reviews__select--mobile">
-            <span class="category-filter__sort-title">Сортировать по:</span>
-            <select name="<?= $sort_name ?>" class="js_custom-filter-select">
-                <? foreach ($sort_comment->getSortConfig()['SORT'] as $key => $sort): ?>
-                    <option <?= $sort_com['CODE'] == $sort['CODE'] && $sort_com['VALUE'] == $sort['VALUE'] ? 'selected' : '' ?>
-                            value="<?= $sort['VALUE'] ?>"><?= $sort['NAME'] ?></option>
-                <? endforeach; ?>
-            </select>
-        </div>
-
-
-        <?
-        global $filter_comment;
-        $filter_comment = array(
-            'PROPERTY_PROD_ID' => $elementId
-        );
-
-
-        $APPLICATION->IncludeComponent(
-            "bitrix:news.list",
-            "comment_prod",
-            array(
-                "ACTIVE_DATE_FORMAT" => "d.m.Y",
-                "ADD_SECTIONS_CHAIN" => "Y",
-                "AJAX_MODE" => "N",
-                "AJAX_OPTION_ADDITIONAL" => "",
-                "AJAX_OPTION_HISTORY" => "N",
-                "AJAX_OPTION_JUMP" => "N",
-                "AJAX_OPTION_STYLE" => "Y",
-                "CACHE_FILTER" => "N",
-                "CACHE_GROUPS" => "N",
-                "CACHE_TIME" => "3600",
-                "CACHE_TYPE" => "A",
-                "CHECK_DATES" => "Y",
-                "DETAIL_URL" => "",
-                "DISPLAY_BOTTOM_PAGER" => "Y",
-                "DISPLAY_DATE" => "Y",
-                "DISPLAY_NAME" => "Y",
-                "DISPLAY_PICTURE" => "Y",
-                "DISPLAY_PREVIEW_TEXT" => "Y",
-                "DISPLAY_TOP_PAGER" => "N",
-                "FIELD_CODE" => array(
-                    0 => "DATE_ACTIVE_FROM",
-                    1 => "",
-                ),
-                "FILTER_NAME" => "filter_comment",
-                "HIDE_LINK_WHEN_NO_DETAIL" => "N",
-                "IBLOCK_ID" => "6",
-                "IBLOCK_TYPE" => "altasib_feedback",
-                "INCLUDE_IBLOCK_INTO_CHAIN" => "Y",
-                "INCLUDE_SUBSECTIONS" => "Y",
-                "MESSAGE_404" => "",
-                "NEWS_COUNT" => "5",
-                "PAGER_BASE_LINK_ENABLE" => "N",
-                "PAGER_DESC_NUMBERING" => "N",
-                "PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
-                "PAGER_SHOW_ALL" => "N",
-                "PAGER_SHOW_ALWAYS" => "N",
-                "PAGER_TEMPLATE" => ".default",
-                "PAGER_TITLE" => "Новости",
-                "PARENT_SECTION" => "",
-                "PARENT_SECTION_CODE" => "",
-                "PREVIEW_TRUNCATE_LEN" => "",
-                "PROPERTY_CODE" => array(
-                    0 => "AGE",
-                    1 => "USER_ID",
-                    2 => "SKIN_TYPE",
-                    3 => "HAIR_COLOR",
-                    4 => "EYE_COLOR",
-                    5 => "",
-                ),
-                "SET_BROWSER_TITLE" => "N",
-                "SET_LAST_MODIFIED" => "N",
-                "SET_META_DESCRIPTION" => "N",
-                "SET_META_KEYWORDS" => "N",
-                "SET_STATUS_404" => "N",
-                "SET_TITLE" => "N",
-                "SHOW_404" => "N",
-                "SORT_BY1" => $sort_com['CODE'],
-                "SORT_BY2" => "SORT",
-                "SORT_ORDER1" => $sort_com['VALUE'],
-                "SORT_ORDER2" => "DESC",
-                "STRICT_SECTION_CHECK" => "N",
-                "COMPONENT_TEMPLATE" => "comment_prod"
-            ),
-            false
-        ); ?>
-
     </div>
-</div>
+<? endif; ?>
+
+
+
+<div data-retailrocket-markup-block="5dcc086097a528188c0bc1ee" ></div>
+
+
 <div>
 
 

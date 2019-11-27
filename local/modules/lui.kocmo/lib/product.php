@@ -18,6 +18,8 @@ class Product
         $arData = $this->arData;
         $arData = [
             'ID' => $arData['ID'],
+            'AVAILABLE_QUANTITY' => $arData['AVAILABLE_QUANTITY'],
+            'PROPERTY_ARTIKUL_VALUE' => $arData['PROPERTY_ARTIKUL_VALUE'],
             'PRODUCT_ID' => $arData['PRODUCT_ID'],
             'QUANTITY' => $arData['QUANTITY'],
             'BASE_PRICE' => $arData['BASE_PRICE'],

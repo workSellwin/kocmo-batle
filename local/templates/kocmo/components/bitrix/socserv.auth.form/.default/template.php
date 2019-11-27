@@ -30,3 +30,8 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true)
     <a href="#" class="form-login__soc-footer-lnk link">Как это работает?</a>
 </div>
 
+<!--            <a href="#" class="form-login__soc-item footer__soc-item--tw"></a>-->
+<!--            <a href="#" class="form-login__soc-item footer__soc-item--vk"></a>-->
+<!--            <a href="#" class="form-login__soc-item footer__soc-item--fb"></a>-->
+<!--            <a href="#" class="form-login__soc-item footer__soc-item--yt"></a>-->
+<!--                <a href="#" class="form-login__soc-item footer__soc-item--ok"></a>-->

@@ -45,7 +45,9 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
         echo '<div>', 'Дождитесь подтвержения смены пароля на почту и <a href="/auth/">авторизуйтесь</a>' , '</div>';
     }
 }?>
-
+<?
+//echo '<pre>', print_r($arResult, true), '</pre>';
+?>
 <form method="post" action="<?= $arResult["AUTH_FORM"] ?>" name="bform" class="form-create-password">
     <? if (strlen($arResult["BACKURL"]) > 0): ?>
         <input type="hidden" name="backurl" value="<?= $arResult["BACKURL"] ?>"/>

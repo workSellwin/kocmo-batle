@@ -12,6 +12,8 @@
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
 
+$checked = [];
+
 $templateData = array(
     'TEMPLATE_THEME' => $this->GetFolder() . '/themes/' . $arParams['TEMPLATE_THEME'] . '/colors.css',
     'TEMPLATE_CLASS' => 'bx-' . $arParams['TEMPLATE_THEME']
@@ -689,13 +691,15 @@ if (isset($templateData['TEMPLATE_THEME'])) {
         <div class="category-filter__inner">
 
             <div class="category-filter__order-place">
-                <? $arOrderPlace = array(
-                       'ONLINE_STORE',  'UNDER_ORDER',
-                );
+                <?
                 foreach ($arResult["ITEMS"] as $key => $arItem): ?>
-                    <? if (in_array($arItem["CODE"], $arOrderPlace)): ?>
-
-                        <? foreach ($arItem["VALUES"] as $val => $ar): ?>
+                    <? if (count($arItem["VALUES"]) == 1):
+                        foreach ($arItem["VALUES"] as $val => $ar):
+                            //PR($ar);
+                            if ($ar["CHECKED"]):
+                                $checked[$ar["HTML_VALUE_ALT"]]['NAME'] = $ar["VALUE"];
+                                $checked[$ar["HTML_VALUE_ALT"]]['CONTROL_NAME'] = $ar["CONTROL_NAME"];
+                            endif ?>
 
                             <label data-role="label_<?= $ar["CONTROL_ID"] ?>"
                                    class="js_checkbox checkbox">
@@ -710,74 +714,83 @@ if (isset($templateData['TEMPLATE_THEME'])) {
                                 />
                                 <?= $arItem['NAME'] ?>
                             </label>
+
                         <? endforeach; ?>
                     <? endif; ?>
                 <? endforeach; ?>
             </div>
 
             <div class="category-filter__inner-wrap">
-                <?$arInnerWrap = array(
-                    'BRAND',  'ROZNICHNAYA', 'STATUS',
+                <? $arInnerWrap = array(
+                    'MARKA', 'ROZNICHNAYA', 'STATUS',
                 );
                 foreach ($arResult["ITEMS"] as $key => $arItem): ?>
-                    <? if (in_array($arItem["CODE"], $arInnerWrap)): ?>
-                        <?if($arItem["CODE"] == 'ROZNICHNAYA'):?>
-                            <div class="category-filter__item">
-                                <div class="category-filter__item-title js_filter-accordion">
-                                    Стоимость
-                                </div>
-                                <div class="category-filter__item-inner category-filter__item-inner--cost">
-
-                                    От <input type="text"
-                                              id="<?=$arItem['VALUES']['MIN']["CONTROL_ID"] ?>"
-                                              name="<?=$arItem['VALUES']['MIN']["CONTROL_NAME"] ?>"
-                                              placeholder="<?=$arItem['VALUES']['MIN']['VALUE']?>"
-                                              value="<?=$arItem['VALUES']['MIN']["HTML_VALUE"] ?>"
-                                              onkeyup="checkCurr(this)"
-                                              class="field-bordered">
-
-                                    <span class="category-filter__divider"></span>
-
-                                    До <input type="text"
-                                              id="<?=$arItem['VALUES']['MAX']["CONTROL_ID"] ?>"
-                                              name="<?=$arItem['VALUES']['MAX']["CONTROL_NAME"] ?>"
-                                              placeholder="<?=$arItem['VALUES']['MAX']['VALUE']?>"
-                                              value="<?=$arItem['VALUES']['MAX']["HTML_VALUE"] ?>"
-                                              onkeyup="checkCurr(this)"
-                                              class="field-bordered">
-                                </div>
+                    <? // if (in_array($arItem["CODE"], $arInnerWrap)): ?>
+                    <? if ($arItem["CODE"] == 'ROZNICHNAYA'): ?>
+                        <div class="category-filter__item">
+                            <div class="category-filter__item-title js_filter-accordion">
+                                Стоимость
                             </div>
-                        <?else:?>
-                            <?if(!empty($arItem["VALUES"])):?>
+                            <div class="category-filter__item-inner category-filter__item-inner--cost">
+
+                                От <input type="text"
+                                          id="<?= $arItem['VALUES']['MIN']["CONTROL_ID"] ?>"
+                                          name="<?= $arItem['VALUES']['MIN']["CONTROL_NAME"] ?>"
+                                          placeholder="<?= $arItem['VALUES']['MIN']['VALUE'] ?>"
+                                          value="<?= $arItem['VALUES']['MIN']["HTML_VALUE"] ?>"
+                                          onkeyup="checkCurr(this)"
+                                          class="field-bordered">
+
+                                <span class="category-filter__divider"></span>
+
+                                До <input type="text"
+                                          id="<?= $arItem['VALUES']['MAX']["CONTROL_ID"] ?>"
+                                          name="<?= $arItem['VALUES']['MAX']["CONTROL_NAME"] ?>"
+                                          placeholder="<?= $arItem['VALUES']['MAX']['VALUE'] ?>"
+                                          value="<?= $arItem['VALUES']['MAX']["HTML_VALUE"] ?>"
+                                          onkeyup="checkCurr(this)"
+                                          class="field-bordered">
+                            </div>
+                        </div>
+                    <? else: ?>
+                        <? if (!empty($arItem["VALUES"])): ?>
+                            <? if (count($arItem["VALUES"]) > 1): ?>
                                 <div class="category-filter__item">
                                     <div class="category-filter__item-title js_filter-accordion">
-                                        <?=$arItem['NAME']?>
+                                        <?= $arItem['NAME'] ?>
                                     </div>
                                     <div class="category-filter__item-inner">
-                                        <? foreach ($arItem["VALUES"] as $val => $ar): ?>
-                                            <label class="checkbox js_checkbox">
-                                                <input
-                                                        type="checkbox"
-                                                        value="<? echo $ar["HTML_VALUE"] ?>"
-                                                        name="<? echo $ar["CONTROL_NAME"] ?>"
-                                                        id="<? echo $ar["CONTROL_ID"] ?>"
-                                                    <? echo $ar["CHECKED"] ? 'checked="checked"' : '' ?>
-                                                        onclick="changeSmartFilter(this)"
-                                                /> <?= $ar['VALUE'] ?>
-                                            </label>
-                                        <? endforeach; ?>
+                                        <div class="category-filter__item-inner--scroll  js_filter-scroll">
+                                            <? foreach ($arItem["VALUES"] as $val => $ar):
+                                                if ($ar["CHECKED"]):
+                                                    $checked[$ar["HTML_VALUE_ALT"]]['NAME'] = $ar["VALUE"];
+                                                    $checked[$ar["HTML_VALUE_ALT"]]['CONTROL_NAME'] = $ar["CONTROL_NAME"];
+                                                endif ?>
+                                                <label class="checkbox js_checkbox">
+                                                    <input
+                                                            type="checkbox"
+                                                            value="<? echo $ar["HTML_VALUE"] ?>"
+                                                            name="<? echo $ar["CONTROL_NAME"] ?>"
+                                                            id="<? echo $ar["CONTROL_ID"] ?>"
+                                                        <? echo $ar["CHECKED"] ? 'checked="checked"' : '' ?>
+                                                            onclick="changeSmartFilter(this)"
+                                                    /> <?= $ar['VALUE'] ?>
+                                                </label>
+                                            <? endforeach; ?>
+                                        </div>
                                     </div>
                                 </div>
                             <? endif; ?>
                         <? endif; ?>
                     <? endif; ?>
+                    <? // endif; ?>
                 <? endforeach; ?>
             </div>
         </div>
         <div class="category-filter__sort custom-select-wrap">
             <span class="category-filter__sort-title">Сортировать по:</span>
             <select name="filter_sort" onchange="changeSmartFilter(this)" class="js_custom-filter-select">
-                <?/*<option value="sort_default" selected>умолчанию</option>*/?>
+                <? /*<option value="sort_default" selected>умолчанию</option>*/ ?>
                 <option value="sort_increase">A-Z</option>
                 <option value="sort_decrease">Z-A</option>
             </select>
@@ -786,4 +799,16 @@ if (isset($templateData['TEMPLATE_THEME'])) {
     </div>
 </form>
 
-<?//PR($arResult)?>
+
+<div class="category-filter-active-fields-wrap" <?= !empty($checked) ? 'style="display: block"' : '' ?> >
+    <div class="container js_category-filter-active-fields">
+        <? if (!empty($checked)): ?>
+            <? foreach ($checked as $check): ?>
+                <div class="category-filter-active__item"
+                     data-name="<?= $check['CONTROL_NAME'] ?>"><?= $check['NAME'] ?>
+                    <div class="category-filter-active__item-close js_category-filter-active__item-close"></div>
+                </div>
+            <? endforeach; ?>
+        <? endif ?>
+    </div>
+</div>

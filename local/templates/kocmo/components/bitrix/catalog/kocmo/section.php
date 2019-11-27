@@ -116,9 +116,6 @@ $APPLICATION->IncludeComponent(
 ); ?>
 
 
-<div class="category-filter-active-fields-wrap">
-    <div class="container js_category-filter-active-fields"></div>
-</div>
 
 <div id="AJAX_FILTER_CONTAINER">
     <?
@@ -309,4 +306,12 @@ $APPLICATION->IncludeComponent(
             }
         }
     });
+</script>
+
+
+<script type="text/javascript">
+    <?php $arResult['SECTION_ID'] = CIBlockFindTools::GetSectionID( $arResult['VARIABLES']['SECTION_ID'], $arResult['VARIABLES']['SECTION_CODE'], array('IBLOCK_ID' => $arParams['IBLOCK_ID']) ); ?>
+    (window["rrApiOnReady"] = window["rrApiOnReady"] || []).push(function() {
+        try { rrApi.categoryView(<?=$arResult['SECTION_ID']?>); } catch(e) {}
+    })
 </script>

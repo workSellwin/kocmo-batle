@@ -37,6 +37,6 @@ class AddBasket implements ActionsInterfaces
 
     public function Available()
     {
-        return ['Add', 'Del'];
+        return ['Add'];
     }
 }

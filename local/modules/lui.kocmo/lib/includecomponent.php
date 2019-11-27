@@ -179,13 +179,14 @@ class IncludeComponent
         $APPLICATION->IncludeComponent(
             $component,
             $template,
-            $arParams
-        /*  false,
+            $arParams/*,
+          false,
           ["HIDE_ICONS"=>"Y"]*/
         );
     }
 
-    public static function SaleBasketBasket(array $arData){
+    public static function SaleBasketBasket(array $arData)
+    {
         $template = $arData['template'];
         unset($arData['template']);
         $arProp = [
@@ -201,6 +202,7 @@ class IncludeComponent
                 3 => "DELAY",
                 4 => "TYPE",
                 5 => "SUM",
+                6 => "PROPERTY_ARTIKUL",
             ),
             "COLUMNS_LIST_MOBILE" => array(
                 0 => "PREVIEW_PICTURE",
@@ -209,6 +211,7 @@ class IncludeComponent
                 3 => "DELAY",
                 4 => "TYPE",
                 5 => "SUM",
+                6 => "PROPERTY_ARTIKUL",
             ),
             "COMPATIBLE_MODE" => "Y",
             "CORRECT_RATIO" => "Y",
@@ -230,8 +233,7 @@ class IncludeComponent
             "GIFTS_SHOW_OLD_PRICE" => "N",
             "GIFTS_TEXT_LABEL_GIFT" => "Подарок",
             "HIDE_COUPON" => "Y",
-            "LABEL_PROP" => array(
-            ),
+            "LABEL_PROP" => array(),
             "OFFERS_PROPS" => array(
                 0 => "COLOR_REF",
             ),
@@ -258,6 +260,85 @@ class IncludeComponent
         self::IncludeComponent("bitrix:sale.basket.basket", $template, array_merge($arProp, $arData));
     }
 
+
+    public static function SaleOrderAjax(array $arData)
+    {
+        $template = $arData['template'];
+        unset($arData['template']);
+        $arProp = [
+            "COMPONENT_TEMPLATE" => "kocmo",
+            "PAY_FROM_ACCOUNT" => "N",
+            "ONLY_FULL_PAY_FROM_ACCOUNT" => "N",
+            "ALLOW_AUTO_REGISTER" => "Y",
+            "ALLOW_APPEND_ORDER" => "Y",
+            "SEND_NEW_USER_NOTIFY" => "Y",
+            "DELIVERY_NO_AJAX" => "N",
+            "SHOW_NOT_CALCULATED_DELIVERIES" => "L",
+            "DELIVERY_NO_SESSION" => "Y",
+            "TEMPLATE_LOCATION" => "popup",
+            "SPOT_LOCATION_BY_GEOIP" => "Y",
+            "DELIVERY_TO_PAYSYSTEM" => "d2p",
+            "SHOW_VAT_PRICE" => "N",
+            "USE_PREPAYMENT" => "N",
+            "COMPATIBLE_MODE" => "Y",
+            "USE_PRELOAD" => "N",
+            "ALLOW_USER_PROFILES" => "N",
+            "ALLOW_NEW_PROFILE" => "N",
+            "TEMPLATE_THEME" => "site",
+            "SHOW_ORDER_BUTTON" => "final_step",
+            "SHOW_TOTAL_ORDER_BUTTON" => "N",
+            "SHOW_PAY_SYSTEM_LIST_NAMES" => "Y",
+            "SHOW_PAY_SYSTEM_INFO_NAME" => "Y",
+            "SHOW_DELIVERY_LIST_NAMES" => "Y",
+            "SHOW_DELIVERY_INFO_NAME" => "Y",
+            "SHOW_DELIVERY_PARENT_NAMES" => "Y",
+            "SHOW_STORES_IMAGES" => "Y",
+            "SKIP_USELESS_BLOCK" => "N",
+            "BASKET_POSITION" => "before",
+            "SHOW_BASKET_HEADERS" => "N",
+            "DELIVERY_FADE_EXTRA_SERVICES" => "N",
+            "SHOW_COUPONS_BASKET" => "N",
+            "SHOW_COUPONS_DELIVERY" => "N",
+            "SHOW_COUPONS_PAY_SYSTEM" => "N",
+            "SHOW_NEAREST_PICKUP" => "N",
+            "DELIVERIES_PER_PAGE" => "9",
+            "PAY_SYSTEMS_PER_PAGE" => "9",
+            "PICKUPS_PER_PAGE" => "5",
+            "SHOW_PICKUP_MAP" => "N",
+            "SHOW_MAP_IN_PROPS" => "N",
+            "PICKUP_MAP_TYPE" => "yandex",
+            "PROPS_FADE_LIST_1" => array(),
+            "USER_CONSENT" => "N",
+            "USER_CONSENT_ID" => "0",
+            "USER_CONSENT_IS_CHECKED" => "Y",
+            "USER_CONSENT_IS_LOADED" => "N",
+            "ACTION_VARIABLE" => "soa-action",
+            "PATH_TO_BASKET" => "/catalog/",
+            "PATH_TO_PERSONAL" => "index.php",
+            "PATH_TO_PAYMENT" => "payment.php",
+            "PATH_TO_AUTH" => "/auth/",
+            "SET_TITLE" => "Y",
+            "DISABLE_BASKET_REDIRECT" => "N",
+            "EMPTY_BASKET_HINT_PATH" => "/",
+            "USE_PHONE_NORMALIZATION" => "Y",
+            "PRODUCT_COLUMNS_VISIBLE" => array(
+                0 => "PREVIEW_PICTURE",
+                1 => "PROPS",
+            ),
+            "ADDITIONAL_PICT_PROP_2" => "-",
+            "ADDITIONAL_PICT_PROP_3" => "-",
+            "BASKET_IMAGES_SCALING" => "adaptive",
+            "SERVICES_IMAGES_SCALING" => "adaptive",
+            "PRODUCT_COLUMNS_HIDDEN" => array(),
+            "HIDE_ORDER_DESCRIPTION" => "N",
+            "USE_YM_GOALS" => "N",
+            "USE_ENHANCED_ECOMMERCE" => "N",
+            "USE_CUSTOM_MAIN_MESSAGES" => "N",
+            "USE_CUSTOM_ADDITIONAL_MESSAGES" => "N",
+            "USE_CUSTOM_ERROR_MESSAGES" => "N"
+        ];
+        self::IncludeComponent("bitrix:sale.order.ajax", $template, array_merge($arProp, $arData));
+    }
 
     /**
      *
