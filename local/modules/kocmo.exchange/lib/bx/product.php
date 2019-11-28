@@ -17,6 +17,7 @@ class Product extends Helper
     protected $arProperty = [];
     protected $arEnumMatch = [];
     protected $defaultLimit = 1000;
+    protected $ENTRY = 'product';
 
     /**
      * Product constructor.
@@ -68,8 +69,8 @@ class Product extends Helper
 
         if($end){
             $this->status = 'end';
-            $connection = Main\Application::getConnection();
-            $connection->truncateTable(Exchange\DataTable::getTableName());
+            //$connection = Main\Application::getConnection();
+            //$connection->truncateTable(Exchange\DataTable::getTableName());
         }
         else{
             $this->status = 'run';
@@ -159,13 +160,17 @@ class Product extends Helper
             return false;
         }
 
-        $iterator = Exchange\DataTable::getList(['limit' => $this->defaultLimit]);
+        $iterator = Exchange\DataTable::getList([
+            'filter' => ['ENTRY' => $this->ENTRY],
+            'limit' => $this->defaultLimit
+        ]);
 
         $sectionsMatch = $this->getAllSectionsXmlId();
         $this->setEnumMatch();
 
         while($row = $iterator->fetch() ){
-
+echo '<pre>' . print_r($row, true) . '</pre>';
+//die('ff');
             $rowId = $row['ID'];
             $row = json_decode($row['JSON'], true);
             $props = [];
@@ -219,7 +224,8 @@ class Product extends Helper
                 "DETAIL_PICTURE" => $row[$this->arParams['PIC_FILE']],
                 "PROPERTY_VALUES" => $props
             );
-
+//            echo '<pre>' . print_r( $arFields , true) . '</pre>';
+//            die('ff');
             yield $arFields;
         }
     }

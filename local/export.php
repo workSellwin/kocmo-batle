@@ -18,12 +18,13 @@ else{
 }
 
 $bx = StaticFactory::factory($step);
-
+//echo '<pre>' . print_r($bx, true) . '</pre>';
+//die('ff');
 if($bx) {
     $flag = $bx->update();
 echo $step;
     die();
-if($step > 10) die();
+if($step > 20) die();
     if ($bx->getStatus() == 'run') {
         header('Location: ' . $uri . '?step=' . $step);
         exit;

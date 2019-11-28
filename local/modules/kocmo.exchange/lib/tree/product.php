@@ -40,8 +40,8 @@ class Product extends Builder
         if( $this->utils->checkRef( $this->reqParam['UID'] ) ){
             $itemXmlId = $this->reqParam['UID'];
         }
-        elseif( $this->utils->checkRef($_SESSION[$this->arParams['PRODUCT_LAST_UID']]) ){
-            $itemXmlId = $_SESSION[$this->arParams['PRODUCT_LAST_UID']];
+        elseif( $this->utils->checkRef( $this->utils->getModuleData( $this->arParams['PRODUCT_LAST_UID'] ) ) ){
+            $itemXmlId = $this->utils->getModuleData( $this->arParams['PRODUCT_LAST_UID'] );
         }
 
         $limit = $this->reqParam['PRODUCT_LIMIT'] ? $this->reqParam['PRODUCT_LIMIT'] : $this->arParams['PRODUCT_LIMIT'];
@@ -64,6 +64,7 @@ class Product extends Builder
         }
 
         $arProps = $this->getPropsFromReq();
+
         foreach($arProps as $prop){
 
             $guiMatch = $this->utils->getStrFromGuid($prop['UID']);
@@ -71,7 +72,7 @@ class Product extends Builder
         }
 
         $getParamsStr =  '?' . $this->getReqParams();
-
+        //echo '<pre>' . print_r($getParamsStr, true) . '</pre>';
         $client = new \GuzzleHttp\Client();
         $response = $client->request('GET', $this->pointOfEntry . $getParamsStr);
         $arForDb = [];

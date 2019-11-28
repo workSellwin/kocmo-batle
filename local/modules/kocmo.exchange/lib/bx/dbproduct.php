@@ -32,7 +32,7 @@ class Dbproduct extends Helper
 
         $this->startTimestamp = time();
         $arForDb = $this->treeBuilder->getProductsFromReq();
-
+        //echo '<pre>' . print_r($arForDb, true) . '</pre>';
         $last = true;
 
         if( is_array($arForDb) && count($arForDb) ) {
@@ -46,6 +46,8 @@ class Dbproduct extends Helper
                 }
 
                 try{
+                    $item['ENTRY'] = 'product';
+
                     $result = Exchange\DataTable::add($item);
                     if($result->isSuccess()){
                         $this->utils->setModuleData($this->arParams['PRODUCT_LAST_UID'], $item["UID"]);
@@ -58,6 +60,7 @@ class Dbproduct extends Helper
             }
         }
         if($last === true){
+            $this->utils->setModuleData($this->arParams['PRODUCT_LAST_UID'], '');
             $this->status = 'end';
         }
         return $last;

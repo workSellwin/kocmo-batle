@@ -50,6 +50,11 @@ class DataTable extends Main\Entity\DataManager
                 'validation' => array(__CLASS__, 'validateUid'),
                 'title' => Loc::getMessage('DATA_ENTITY_UID_FIELD'),
             ),
+            'ENTRY' => array(
+                'data_type' => 'string',
+                'validation' => array(__CLASS__, 'validateUid'),
+                'title' => Loc::getMessage('DATA_ENTITY_UID_FIELD'),
+            ),
             'JSON' => array(
                 'data_type' => 'text',
                 'required' => true,

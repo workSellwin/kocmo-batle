@@ -217,14 +217,6 @@
 
     <hr>
 
-    <?if($USER->GetId() == 14 && false):?>
-        <? $APPLICATION->IncludeComponent(
-            "bitrix:system.auth.changepasswd",
-            "personal",
-            Array()
-        ); ?>
-    <?else:?>
-
         <div class="cabinet-profile container">
             <div class="cabinet-profile__title">Сменить пароль</div>
 
@@ -255,8 +247,6 @@
                 </div>
             </div>
         </div>
-
-    <?endif;?>
 
     <hr>
 

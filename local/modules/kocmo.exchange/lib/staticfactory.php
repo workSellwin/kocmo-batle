@@ -7,18 +7,18 @@ use Kocmo\Exchange\Bx;
 final class StaticFactory
 {
 
-    private $stages = [
-        '0' => 'section',
-        '10' => 'property',
-        '20' => 'db_product',
-        '30' => 'offer',
-        '40' => 'product',
-        '50' => 'store',
-        '60' => 'rest',
-        '70' => 'type_price',
-        '80' => 'price',
-        '90' => 'image',
-    ];
+//    private $stages = [
+//        '0' => 'section',
+//        '10' => 'property',
+//        '20' => 'db_product',
+//        '30' => 'offer',
+//        '40' => 'product',
+//        '50' => 'store',
+//        '60' => 'rest',
+//        '70' => 'type_price',
+//        '80' => 'price',
+//        '90' => 'image',
+//    ];
 
     static function factory($stage = '0'){
 
@@ -33,24 +33,27 @@ final class StaticFactory
                 return new Bx\Dbproduct();
                 break;
             case '30':
-                return new Bx\Offer();
+                return new Bx\Dboffer();
                 break;
             case '40':
                 return new Bx\Product();
                 break;
             case '50':
-                return new Bx\Store();
+                return new Bx\Offer();
                 break;
             case '60':
-                return new Bx\Rest();
+                return new Bx\Store();
                 break;
             case '70':
-                return new Bx\Typeprice();
+                return new Bx\Rest();
                 break;
             case '80':
-                return new Bx\Price();
+                return new Bx\Typeprice();
                 break;
             case '90':
+                return new Bx\Price();
+                break;
+            case '100':
                 return new Bx\Image();
                 break;
             default:

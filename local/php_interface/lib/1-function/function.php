@@ -11,8 +11,9 @@ function _Check404Error()
     }
 }*/
 
-function number_format_kocmo($float){
-    return number_format($float,2,'.',' ');
+function number_format_kocmo($float)
+{
+    return number_format($float, 2, '.', ' ');
 }
 
 if (!function_exists("getChilds")) {
@@ -55,7 +56,7 @@ if (!function_exists("PR")) {
      * @param bool $die
      * @return bool
      */
-    function PR($o, $show = false, $die = false)
+    function PR($o, $UserId = false, $die = false)
     {
         global $USER, $APPLICATION;
 
@@ -67,7 +68,7 @@ if (!function_exists("PR")) {
             $APPLICATION->RestartBuffer();
         }
 
-        if ((is_object($USER) and $USER->isAdmin()) || $show) {
+        if ((is_object($USER) and $USER->GetID() == $UserId) || $show) {
             $bt = debug_backtrace();
             $bt = $bt[0];
             $dRoot = $_SERVER["DOCUMENT_ROOT"];
@@ -249,10 +250,9 @@ if (!function_exists("getPreparePhone")) {
     {
         $phone = preg_replace('/[^0-9]/', '', $rawPhone);
 
-        if(strlen($phone) === 12){
-            return '+' . $phone;
-        }
-        else{
+        if (strlen($phone) === 12) {
+            return $phone;
+        } else {
             return false;
         }
     }

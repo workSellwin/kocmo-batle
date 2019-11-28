@@ -124,7 +124,7 @@ $APPLICATION->IncludeComponent(
     //pr( $GLOBALS['filter_catalog_prod']['PROPERTY_MARKA_VALUE'] );
     $APPLICATION->IncludeComponent(
         "bitrix:catalog.section",
-        "brands",
+        "section",
         array(
             "ACTION_VARIABLE" => "action",
             "ADD_PICT_PROP" => "MORE_PHOTO",

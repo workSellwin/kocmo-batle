@@ -11,6 +11,8 @@ class DiscountCart implements ActionsInterfaces
 {
     private $arData = null;
     private $actionObj = null;
+    private $getCartDiscountUrl = 'http://kocmo1c.sellwin.by/Kosmo_Sergey/hs/Kocmo/GetCardDiscount?id=';
+    private $userData = null;
 
     public function __construct()
     {
@@ -29,7 +31,7 @@ class DiscountCart implements ActionsInterfaces
             $returnVal["SUCCESS"] = 0;
             return $returnVal;
         }
-        $this->discountRequest($param['cart']);
+        $this->discountRequest($param['cart'], $param['phone']);
 
         if($this->arData){
             $returnVal["VALUE"] = $this->arData;
@@ -48,6 +50,7 @@ class DiscountCart implements ActionsInterfaces
         $param = json_decode($param, true);
 
         if( !empty($param['code']) ){
+
             $userData = $this->getUserData($param['code']);
 
             if(is_array($userData)){
@@ -74,17 +77,28 @@ class DiscountCart implements ActionsInterfaces
         return $returnVal;
     }
 
-    private function discountRequest($discountCartNum)
-    {//тут будет запрос к сервису
+    private function discountRequest($discountCartNum, $phone)
+    {
+        if( intval($discountCartNum) < 1 && !is_string($phone) && strlen($phone) != 12 ){
+            return false;
+        }
 
-        $this->reqData = '{
-"CurrentSum": "206.36",
-"CurrentName": "4% на номенклатуру сегмента Вид номенклатуры Товар (Сумма продажи по ДК не менее 200 руб.)",
-"CurrentValue": "4",
-"NextSum": "400.00",
-"NextName": "5% на номенклатуру сегмента Вид номенклатуры Товар (Сумма продажи по ДК не менее 400 руб.)",
-"NextValue": "5"
-}';
+        $userData = $this->getUserData($discountCartNum);
+
+        if($userData['Телефон'] != $phone){
+            return false;
+        }
+
+        $this->reqData = file_get_contents($this->getCartDiscountUrl . $discountCartNum);
+
+//        $this->reqData = '{
+//"CurrentSum": "206.36",
+//"CurrentName": "4% на номенклатуру сегмента Вид номенклатуры Товар (Сумма продажи по ДК не менее 200 руб.)",
+//"CurrentValue": "4",
+//"NextSum": "400.00",
+//"NextName": "5% на номенклатуру сегмента Вид номенклатуры Товар (Сумма продажи по ДК не менее 400 руб.)",
+//"NextValue": "5"
+//}';
 
         $this->arData = json_decode($this->reqData, true);
 
@@ -96,7 +110,10 @@ class DiscountCart implements ActionsInterfaces
 
     private function getUserData($code){
 
-        //$ob = new Action();
+        if($this->userData){
+            return $this->userData;
+        }
+
         $arResult = $this->actionObj->Run(['ACTION' => 'Discount', 'code' => $code]);
 
         return is_array($arResult) ? $arResult : false;
