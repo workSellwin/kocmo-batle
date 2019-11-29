@@ -72,14 +72,19 @@ class Product extends Builder
         }
 
         $getParamsStr =  '?' . $this->getReqParams();
-        //echo '<pre>' . print_r($getParamsStr, true) . '</pre>';
+
         $client = new \GuzzleHttp\Client();
         $response = $client->request('GET', $this->pointOfEntry . $getParamsStr);
         $arForDb = [];
-
+//        echo '<pre>' . print_r($this->pointOfEntry . $getParamsStr, true) . '</pre>';
+//        die('ff');
         if ($response->getStatusCode() == 200) {
 
             $arProducts = json_decode($response->getBody(), true);
+
+            if( isset($arProducts['Error']) ){
+                throw new \Error("error: message: " . $arProducts['Error']);
+            }
 
             foreach( $arProducts as $key => $item ){
 

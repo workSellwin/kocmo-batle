@@ -175,7 +175,7 @@ class Rest extends Helper
 
     private function updateAvailable(){
 
-        $res = Catalog\StoreProductTable::getList([]);
+        $res = Catalog\StoreProductTable::getList(['filter' => ['STORE_ID' => 17]]);//только Независимости 6
         $productAmount = [];
 
         while ($row = $res->fetch()) {
@@ -189,6 +189,11 @@ class Rest extends Helper
         $obProduct = new \CCatalogProduct();
 
         foreach ($productAmount as $id => $quantity) {
+
+            if($quantity < 2){
+                $quantity = 0;
+            }
+
             $obProduct->Update($id, ['QUANTITY' => $quantity]);
         }
 

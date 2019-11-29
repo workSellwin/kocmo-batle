@@ -169,7 +169,7 @@ class Product extends Helper
         $this->setEnumMatch();
 
         while($row = $iterator->fetch() ){
-echo '<pre>' . print_r($row, true) . '</pre>';
+//echo '<pre>' . print_r($row, true) . '</pre>';
 //die('ff');
             $rowId = $row['ID'];
             $row = json_decode($row['JSON'], true);

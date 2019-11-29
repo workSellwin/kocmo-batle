@@ -10,7 +10,6 @@ use \Bitrix\Catalog,
 
 class Dboffer extends Helper
 {
-
     protected $defaultLimit = 1000;
 
     /**
@@ -28,8 +27,7 @@ class Dboffer extends Helper
 
     $this->startTimestamp = time();
     $arForDb = $this->treeBuilder->getProductsFromReq();
-//    echo '<pre>' . print_r($arForDb, true) . '</pre>';
-//    die();
+
     $last = true;
 
     if( is_array($arForDb) && count($arForDb) ) {
@@ -44,16 +42,28 @@ class Dboffer extends Helper
 
             try{
                 $item['ENTRY'] = 'offer';
+                //echo '<pre>' . print_r($item, true) . '</pre>';
 
                 $result = Exchange\DataTable::add($item);
-                if($result->isSuccess()){
+
+                //if($result->isSuccess()){
                     $this->utils->setModuleData($this->arParams['OFFER_LAST_UID'], $item["UID"]);
-                }
+                //}
             } catch ( DB\SqlQueryException $e ){
                 //например попытка добавить с не уникальным UID
+//                echo '<pre>' . print_r($item, true) . '</pre>';
+//                die();
+
+                $this->utils->setModuleData($this->arParams['OFFER_LAST_UID'], $item["UID"]);
+                $this->errors[] = $e->getMessage();
+            } catch (\Exception $e ){
+                $this->utils->setModuleData($this->arParams['OFFER_LAST_UID'], $item["UID"]);
                 $this->errors[] = $e->getMessage();
             }
         }
+//        echo '<pre>' . print_r($this->utils->getModuleData($this->arParams['OFFER_LAST_UID']), true) . '</pre>';
+//        echo '<pre>' . print_r($this->errors, true) . '</pre>';
+//        die();
     }
     if($last === true){
         $this->utils->setModuleData($this->arParams['OFFER_LAST_UID'], '');
@@ -62,19 +72,20 @@ class Dboffer extends Helper
     return $last;
 }
 
-    private function prepareFieldsGen(&$prodReqArr){
-
-    foreach( $prodReqArr as $key => $item ){
-        yield [
-            "UID" => $key,
-            "JSON" => $item["JSON"],
-            //"IMG_GUI" => $item["IMG_GUI"]
-        ];
+    private function prepareFieldsGen(&$prodReqArr)
+    {
+        foreach ($prodReqArr as $key => $item) {
+            yield [
+                "UID" => $key,
+                "JSON" => $item["JSON"],
+                //"IMG_GUI" => $item["IMG_GUI"]
+            ];
+        }
     }
-}
 
-    static public function truncateTable(){
-    $connection = Application::getConnection();
-    $connection->truncateTable(Exchange\DataTable::getTableName());
-}
+    static public function truncateTable()
+    {
+        $connection = Application::getConnection();
+        $connection->truncateTable(Exchange\DataTable::getTableName());
+    }
 }

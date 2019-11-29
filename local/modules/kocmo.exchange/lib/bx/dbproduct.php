@@ -32,7 +32,8 @@ class Dbproduct extends Helper
 
         $this->startTimestamp = time();
         $arForDb = $this->treeBuilder->getProductsFromReq();
-        //echo '<pre>' . print_r($arForDb, true) . '</pre>';
+//        echo '<pre>' . print_r($arForDb, true) . '</pre>';
+//        die();
         $last = true;
 
         if( is_array($arForDb) && count($arForDb) ) {

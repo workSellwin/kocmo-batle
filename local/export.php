@@ -6,6 +6,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_befo
 use Bitrix\Main\Context,
     Kocmo\Exchange,
     Kocmo\Exchange\StaticFactory;
+
 file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/export-log.txt', $_GET['step'] . "\n" . "time - " . date("H:i:s") . "\n");
 $request = Context::getCurrent()->getRequest();
 $uri = $request->getRequestedPage();
@@ -23,8 +24,8 @@ $bx = StaticFactory::factory($step);
 if($bx) {
     $flag = $bx->update();
 echo $step;
-    die();
-if($step > 20) die();
+
+if($step > 30) die();
     if ($bx->getStatus() == 'run') {
         header('Location: ' . $uri . '?step=' . $step);
         exit;
