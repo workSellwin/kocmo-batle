@@ -7,6 +7,7 @@
  */
 
 namespace Kocmo\Exchange\Bx;
+
 use \Bitrix\Catalog,
     \Kocmo\Exchange,
     \Bitrix\Main,
@@ -31,18 +32,18 @@ class Product extends Helper
         unset($treeBuilder);
     }
 
-    public function update() : bool {
-
+    public function update(): bool
+    {
         $this->startTimestamp = time();
         $oElement = new \CIBlockElement();
         $this->setMatchXmlId();
         $end = true;
 
-        foreach ($this->productsGenerator() as $row){
+        foreach ($this->productsGenerator() as $row) {
 
             $end = false;
 
-            if($this->checkTime()){
+            if ($this->checkTime()) {
                 return $end;
             }
 
@@ -52,11 +53,11 @@ class Product extends Helper
 
             try {
                 $id = $this->addProduct($row, $oElement, $rowId);
-            } catch(\Exception $e){
+            } catch (\Exception $e) {
                 $this->errors[] = $e;
             }
 
-            if( $id > 0 && $this->utils->checkRef($detailPic)) {
+            if ($id > 0 && $this->utils->checkRef($detailPic)) {
 
                 try {
                     Exchange\ProductImageTable::add(["IMG_GUI" => $detailPic, "PRODUCT_ID" => $id]);
@@ -68,18 +69,18 @@ class Product extends Helper
             }
         }
 
-        if($end){
+        if ($end) {
             $this->status = 'end';
             //$connection = Main\Application::getConnection();
             //$connection->truncateTable(Exchange\DataTable::getTableName());
-        }
-        else{
+        } else {
             $this->status = 'run';
         }
         return $end;
     }
 
-    public function updateOne($arProduct){
+    public function updateOne($arProduct)
+    {
 
         $this->setMatchXmlId();
         $sectionsMatch = $this->getAllSectionsXmlId();
@@ -95,21 +96,19 @@ class Product extends Helper
 
                 $code = $this->utils->getCode($key);
 
-                if ($this->utils->checkRef($prop) && isset($this->arEnumMatch[$prop]) ) {
+                if ($this->utils->checkRef($prop) && isset($this->arEnumMatch[$prop])) {
                     $value = $this->arEnumMatch[$prop];
-                }
-                elseif(is_array($prop)) {
+                } elseif (is_array($prop)) {
 
                     $value = [];
 
-                    foreach($prop as $v){
+                    foreach ($prop as $v) {
 
-                        if(isset($this->arEnumMatch[$v])){
+                        if (isset($this->arEnumMatch[$v])) {
                             $value[] = $this->arEnumMatch[$v];
                         }
                     }
-                }
-                else {
+                } else {
                     $value = $prop;
                 }
 
@@ -119,9 +118,9 @@ class Product extends Helper
 
         $arrIblockSectionId = [];
 
-        if( is_array($row[$this->arParams['PARENT_ID']])){
+        if (is_array($row[$this->arParams['PARENT_ID']])) {
 
-            foreach($row[$this->arParams['PARENT_ID']] as $sectionXmlId){
+            foreach ($row[$this->arParams['PARENT_ID']] as $sectionXmlId) {
                 $arrIblockSectionId[] = $sectionsMatch[$sectionXmlId];
             }
         }
@@ -137,10 +136,10 @@ class Product extends Helper
             "PROPERTY_VALUES" => $props
         );
 
-        if( !empty($row[$this->arParams['PIC_FILE']])){
+        if (!empty($row[$this->arParams['PIC_FILE']])) {
 
             $objImg = new Image();
-            $arPic = $objImg->getPhoto( $row[$this->arParams['PIC_FILE']] );
+            $arPic = $objImg->getPhoto($row[$this->arParams['PIC_FILE']]);
             $arFields["DETAIL_PICTURE"] = $arPic;
         }
 
@@ -148,16 +147,17 @@ class Product extends Helper
 
         try {
             $id = $this->addProduct($arFields);
-        } catch(\Exception $e){
+        } catch (\Exception $e) {
             $this->errors[] = $e;
         }
 
         return $id;
     }
 
-    public function productsGenerator(){
+    public function productsGenerator()
+    {
 
-        if(Exchange\DataTable::getCount() == 0){
+        if (Exchange\DataTable::getCount() == 0) {
             return false;
         }
 
@@ -169,7 +169,7 @@ class Product extends Helper
         $sectionsMatch = $this->getAllSectionsXmlId();
         $this->setEnumMatch();
 
-        while($row = $iterator->fetch() ){
+        while ($row = $iterator->fetch()) {
 
             $rowId = $row['ID'];
             $row = json_decode($row['JSON'], true);
@@ -181,21 +181,19 @@ class Product extends Helper
 
                     $code = $this->utils->getCode($key);
 
-                    if ($this->utils->checkRef($prop) && isset($this->arEnumMatch[$prop]) ) {
+                    if ($this->utils->checkRef($prop) && isset($this->arEnumMatch[$prop])) {
                         $value = $this->arEnumMatch[$prop];
-                    }
-                    elseif(is_array($prop)) {
+                    } elseif (is_array($prop)) {
 
                         $value = [];
 
-                        foreach($prop as $v){
+                        foreach ($prop as $v) {
 
-                            if(isset($this->arEnumMatch[$v])){
+                            if (isset($this->arEnumMatch[$v])) {
                                 $value[] = $this->arEnumMatch[$v];
                             }
                         }
-                    }
-                    else {
+                    } else {
                         $value = $prop;
                     }
 
@@ -205,9 +203,9 @@ class Product extends Helper
 
             $arIBlockSectionId = [];
 
-            if( is_array($row[$this->arParams['PARENT_ID']])){
+            if (is_array($row[$this->arParams['PARENT_ID']])) {
 
-                foreach($row[$this->arParams['PARENT_ID']] as $sectionXmlId){
+                foreach ($row[$this->arParams['PARENT_ID']] as $sectionXmlId) {
                     $arIBlockSectionId[] = $sectionsMatch[$sectionXmlId];
                 }
             }
@@ -229,19 +227,21 @@ class Product extends Helper
         }
     }
 
-    protected function setEnumMatch(){
+    protected function setEnumMatch()
+    {
 
         $property_enums = \CIBlockPropertyEnum::GetList([], ["IBLOCK_ID" => $this->catalogId]);
 
-        while($enum_fields = $property_enums->GetNext()){
-            if( !$this->utils->checkRef($enum_fields['XML_ID']) ){
+        while ($enum_fields = $property_enums->GetNext()) {
+            if (!$this->utils->checkRef($enum_fields['XML_ID'])) {
                 continue;
             }
             $this->arEnumMatch[$enum_fields['XML_ID']] = $enum_fields['ID'];
         }
     }
 
-    protected function getAllSectionsXmlId(){
+    protected function getAllSectionsXmlId()
+    {
 
         $entity = \Bitrix\Iblock\Model\Section::compileEntityByIblock($this->catalogId);
 
@@ -252,7 +252,7 @@ class Product extends Helper
 
         $sections = [];
 
-        while($row = $iterator->fetch() ){
+        while ($row = $iterator->fetch()) {
             $sections[$row['XML_ID']] = $row['ID'];
         }
 
@@ -268,7 +268,7 @@ class Product extends Helper
      */
     public function addProduct(array $arFields, $oElement = false, $rowId = false)
     {
-        if($oElement == false){
+        if ($oElement == false) {
             $oElement = new \CIBlockElement();
         }
 
@@ -279,25 +279,24 @@ class Product extends Helper
 
             $id = $oElement->Add($arFields);
 
-            if(intval($id) > 0){
+            if (intval($id) > 0) {
 
-                if( intval($rowId) > 0){
+                if (intval($rowId) > 0) {
                     $deleteResult = Exchange\DataTable::delete($rowId);
                 }
 
                 Catalog\Model\Product::add(array('fields' => ['ID' => $id]));//add to b_catalog_product
-            }
-            else{
-                throw new \Exception("Error: ".$oElement->LAST_ERROR);
+            } else {
+                throw new \Exception("Error: " . $oElement->LAST_ERROR);
             }
 
 
         } else {
-            if( $oElement->Update($prod, $arFields) ){
+            if ($oElement->Update($prod, $arFields)) {
 
                 $id = $prod;
 
-                if( intval($rowId) > 0){
+                if (intval($rowId) > 0) {
                     $deleteResult = Exchange\DataTable::delete($rowId);
                 }
             }
@@ -319,7 +318,8 @@ class Product extends Helper
         }
     }
 
-    private function setMatchXmlId(){
+    private function setMatchXmlId()
+    {
 
         $res = \CIBlockElement::GetList(
             [],
@@ -329,7 +329,7 @@ class Product extends Helper
             ["ID", "IBLOCK_ID", "XML_ID"]
         );
 
-        while($fields = $res->fetch()) {
+        while ($fields = $res->fetch()) {
             $this->productMatchXmlId[$fields["XML_ID"]] = $fields["ID"];
         }
     }

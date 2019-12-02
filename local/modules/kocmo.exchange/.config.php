@@ -20,6 +20,7 @@ return [
         'OFFERS_POINT_OF_ENTRY' => 'http://kocmo1c.sellwin.by/Kosmo_Sergey/hs/Kocmo/GetOffers',
         'PRODUCT_LAST_UID' => 'PRODUCT_LAST_UID',
         'OFFER_LAST_UID' => 'OFFER_LAST_UID',
+        'LAST_STORE_ID' => 'LAST_STORE_ID',
     ],
     "tree" => [
         'PRODUCT_LIMIT' => 500,
@@ -50,5 +51,6 @@ return [
         'REST_ENTRY' => 'http://kocmo1c.sellwin.by/Kosmo_Sergey/hs/Kocmo/GetStock',
         'PRODUCT_LAST_UID' => 'PRODUCT_LAST_UID',
         'OFFER_LAST_UID' => 'OFFER_LAST_UID',
+        'LAST_STORE_ID' => 'LAST_STORE_ID',
     ],
 ];

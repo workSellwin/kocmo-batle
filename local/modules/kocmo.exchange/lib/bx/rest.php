@@ -5,7 +5,8 @@ namespace Kocmo\Exchange\Bx;
 
 use \Bitrix\Catalog,
     \Bitrix\Main\Type\DateTime,
-    \Bitrix\Main\DB;
+    \Bitrix\Main\DB,
+    \Bitrix\Main\Loader;
 
 class Rest extends Helper
 {
@@ -17,7 +18,7 @@ class Rest extends Helper
 
     function __construct()
     {
-        \Bitrix\Main\Loader::includeModule('catalog');
+        Loader::includeModule('catalog');
         $this->stores = $this->getStores();
         $storeXmlId = $this->getCurStore();
 
@@ -40,23 +41,29 @@ class Rest extends Helper
         if( isset($this->stores) && count($this->stores)){
 
             $last = false;
+            $lastStoreId = $this->utils->getModuleData($this->arParams['LAST_STORE_ID']);
 
-            if( !isset($_SESSION['LAST_STORE_ID']) ){
+            if( empty($lastStoreId) ){
 
                 reset($this->stores);
                 $curXmlId = current($this->stores);
-                $_SESSION['LAST_STORE_ID'] = key($this->stores);
+                $this->utils->setModuleData($this->arParams['LAST_STORE_ID'], key($this->stores));
+                //$_SESSION['LAST_STORE_ID'] = key($this->stores);
             }
             else {
 
                 foreach ($this->stores as $id => $xml) {
 
                     if ($last) {
-                        $_SESSION['LAST_STORE_ID'] = $id;
+                        $this->utils->setModuleData($this->arParams['LAST_STORE_ID'], $id);
+                        //$_SESSION['LAST_STORE_ID'] = $id;
                         $curXmlId = $xml;
                         break;
                     }
-                    if ($id == $_SESSION['LAST_STORE_ID']) {
+
+                    $lastStoreId = $this->utils->getModuleData($this->arParams['LAST_STORE_ID']);
+
+                    if ($id == $lastStoreId) {
                         $last = true;
                     }
                 }
@@ -69,7 +76,7 @@ class Rest extends Helper
 
         if($this->storeXmlId === false){
 
-            static::resetCurStore();
+            $this->resetCurStore();
             $this->status = 'end';
             $this->updateAvailable();
             return false;
@@ -118,7 +125,8 @@ class Rest extends Helper
                         //
                     }
                 }
-                $this->clearOldRest($_SESSION['LAST_STORE_ID'], $updateStoreProductIds);
+                $lastStoreId = $this->utils->getModuleData($this->arParams['LAST_STORE_ID']);
+                $this->clearOldRest($lastStoreId, $updateStoreProductIds);
             }
         }
         $this->status = 'run';
@@ -187,6 +195,7 @@ class Rest extends Helper
             }
         }
         $obProduct = new \CCatalogProduct();
+        $el = new \CIBlockElement();
 
         foreach ($productAmount as $id => $quantity) {
 
@@ -203,11 +212,13 @@ class Rest extends Helper
 
         while($row = $res->fetch()){
             $obProduct->Update($row['ID'], ['QUANTITY' => 0]);
+            $el->Update($row['ID'], ['ACTIVE' => 'N']);
         }
     }
 
-    static public function resetCurStore(){
-        unset($_SESSION['LAST_STORE_ID']);
+    public function resetCurStore(){
+        $this->utils->setModuleData($this->arParams['LAST_STORE_ID'], "");
+        //unset($_SESSION['LAST_STORE_ID']);
     }
 
     private function clearOldRest($storeId, $updateStoreProductIds){
