@@ -32,8 +32,8 @@ class Dbproduct extends Helper
 
         $this->startTimestamp = time();
         $arForDb = $this->treeBuilder->getProductsFromReq();
-//        echo '<pre>' . print_r($arForDb, true) . '</pre>';
-//        die();
+        //echo '<pre>' . print_r($arForDb, true) . '</pre>';
+        //die();
         $last = true;
 
         if( is_array($arForDb) && count($arForDb) ) {
@@ -47,12 +47,19 @@ class Dbproduct extends Helper
                 }
 
                 try{
-                    $item['ENTRY'] = 'product';
+//                    echo '<pre>' . print_r($item, true) . '</pre>';
+//                    die();
+                    if( empty($item['PARENT']) || $item['PARENT'] == $item['UID']){
+                        $item['ENTRY'] = 'product';
+                    }
+                    else{
+                        $item['ENTRY'] = 'offer';
+                    }
+
 
                     $result = Exchange\DataTable::add($item);
                     if($result->isSuccess()){
                         $this->utils->setModuleData($this->arParams['PRODUCT_LAST_UID'], $item["UID"]);
-                        //$_SESSION[$this->arParams['PRODUCT_LAST_UID']] = $item["UID"];
                     }
                 } catch ( DB\SqlQueryException $e ){
                     //например попытка добавить с не уникальным UID
@@ -73,7 +80,7 @@ class Dbproduct extends Helper
             yield [
                 "UID" => $key,
                 "JSON" => $item["JSON"],
-                //"IMG_GUI" => $item["IMG_GUI"]
+                "PARENT" => $item["PARENT"]
             ];
         }
     }

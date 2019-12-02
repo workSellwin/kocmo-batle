@@ -57,7 +57,7 @@ final class StaticFactory
                 return new Bx\Image();
                 break;
             default:
-                return null;
+                return new Bx\End();
         }
     }
 
@@ -66,9 +66,9 @@ final class StaticFactory
         if($step == 30){
             return $step + 20;
         }
-        elseif($step == 90){
-
-        }
+//        elseif($step == 90){
+//
+//        }
         return $step + 10;
     }
 }

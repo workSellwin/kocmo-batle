@@ -64,14 +64,6 @@ abstract class Helper
         }
     }
 
-//    protected function setModuleData(string $name, string $data){
-//        Option::set($this->module, $name, $data);
-//    }
-//
-//    protected function getModuleData (string $name){
-//        return Option::get($this->module, $name);
-//    }
-
     abstract public function update(): bool;
 
     protected function setParams(){
@@ -81,22 +73,6 @@ abstract class Helper
         $dir = end( explode('/', __DIR__) );
         $this->arParams = $arParam[$dir];
     }
-
-//    protected function checkRef($val)
-//    {
-//
-//        if (is_string($val) && strlen($val) === 36 && $val != '00000000-0000-0000-0000-000000000000') {
-//            $arr = explode('-', $val);
-//
-//            if (strlen($arr[0]) === 8 && strlen($arr[1]) === 4 && strlen($arr[2]) === 4
-//                && strlen($arr[3]) === 4 && strlen($arr[4]) === 12) {
-//                return true;
-//            }
-//            return false;
-//        } else {
-//            return false;
-//        }
-//    }
 
     protected function getFile($externalId){
 
@@ -119,24 +95,6 @@ abstract class Helper
     {
         return $this->errors;
     }
-
-//    protected function getCode($outCode)
-//    {
-//
-//        $newStr = "";
-//
-//        for ($i = 0; $i < mb_strlen($outCode); $i++) {
-//            $char = mb_substr($outCode, $i, 1);
-//
-//            if (strpos('АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ', $char) !== false && $i) {
-//                $newStr .= '_' . $char;
-//            } else {
-//                $newStr .= $char;
-//            }
-//        }
-//
-//        return \CUtil::translit($newStr, 'ru', ['change_case' => 'U']);
-//    }
 
     protected function checkTime(){
 
