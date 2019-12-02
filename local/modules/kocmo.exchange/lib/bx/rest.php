@@ -183,7 +183,7 @@ class Rest extends Helper
 
     private function updateAvailable(){
 
-        $res = Catalog\StoreProductTable::getList(['filter' => ['STORE_ID' => 17]]);//только Независимости 6
+        $res = Catalog\StoreProductTable::getList(['filter' => ['STORE_ID' => [17, 32]]]);//только Независимости 6
         $productAmount = [];
 
         while ($row = $res->fetch()) {
