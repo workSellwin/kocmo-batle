@@ -1,11 +1,12 @@
 <?php
 //https://documenter.getpostman.com/view/155604/SVtZwmvs?version=latest
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
-\Bitrix\Main\Loader::includeModule('kocmo.exchange');
 
 use Bitrix\Main\Context,
     Kocmo\Exchange,
     Kocmo\Exchange\StaticFactory;
+
+\Bitrix\Main\Loader::includeModule('kocmo.exchange');
 
 file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/export-log.txt', $_GET['step'] . "\n" . "time - " . date("H:i:s") . "\n");
 $request = Context::getCurrent()->getRequest();

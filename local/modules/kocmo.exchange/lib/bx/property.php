@@ -21,9 +21,19 @@ class Property extends Helper
             parent::__construct($treeBuilder);
             $this->prepareProperties();
 
-            $res = Iblock\PropertyTable::getList( ['filter' => ["IBLOCK_ID"=> $this->arParams['IBLOCK_CATALOG_ID'], "ACTIVE" => 'Y'] ] );
+            $res = Iblock\PropertyTable::getList([
+                'filter' => [
+                    "IBLOCK_ID"=> $this->arParams['IBLOCK_CATALOG_ID'],
+                    "!XML_ID" => false,
+                    "ACTIVE" => 'Y'
+                ]
+            ]);
 
             while( $fields = $res->fetch() ){
+
+                if( !$this->utils->checkRef($fields['XML_ID']) ){
+                    continue;
+                }
 
                 $this->props[$fields['XML_ID']] = [
                     "ID" => $fields['ID'],
@@ -34,7 +44,12 @@ class Property extends Helper
                 ];
             }
 
-            $property_enums = \CIBlockPropertyEnum::GetList([], Array("IBLOCK_ID" => $this->arParams['IBLOCK_CATALOG_ID']));
+            $property_enums = \CIBlockPropertyEnum::GetList(
+                [],
+                [
+                    "IBLOCK_ID" => $this->arParams['IBLOCK_CATALOG_ID'],
+                ]
+            );
 
             while($enum_fields = $property_enums->GetNext()){
 
@@ -71,9 +86,10 @@ class Property extends Helper
 
     public function update() : bool {
 
+        //echo '<pre>' . print_r($this->prepareProperties, true) . '</pre>';;die('fff');
         foreach( $this->prepareProperties as $key => $value ){
 
-            if( !$this->checkProp($key) ){
+            if( !$this->checkProp($key) ){//?
 
                 try {
                     $arFields = $this->getDefaultArFields($value);
@@ -89,7 +105,7 @@ class Property extends Helper
 
                 }
             }
-            else{
+            else{//обновление
 
                 $arFields = $this->getDefaultArFields($value);
 
@@ -97,7 +113,7 @@ class Property extends Helper
 
                 if( $propId > 0) {
 
-                    unset($arFields['NAME']);//не обноаляем имя
+                    unset($arFields['NAME']);//не обновляем имя
                     $result = Iblock\PropertyTable::update($propId, $arFields);
 
                     if ($result->isSuccess()) {
@@ -130,8 +146,7 @@ class Property extends Helper
             "CODE" => $options['CODE'],
             "XML_ID" => $options['XML_ID'],
             "PROPERTY_TYPE" => $options['PROPERTY_TYPE'],
-            "IBLOCK_ID" => $this->catalogId,//номер вашего инфоблока
-            //"LIST_TYPE" => "L",
+            "IBLOCK_ID" => $this->catalogId,
             "MULTIPLE" => $options['MULTIPLE'] == "Y" ? "Y" : "N",
         ];
     }

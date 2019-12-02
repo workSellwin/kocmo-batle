@@ -61,4 +61,13 @@ class Utils
 
         return \CUtil::translit($newStr, 'ru', ['change_case' => 'U']);
     }
+
+    function clearTable($table){
+
+        if(!is_string($table)){
+            return false;
+        }
+        $connection = \Bitrix\Main\Application::getConnection();
+        return $connection->truncateTable($table);
+    }
 }

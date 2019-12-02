@@ -23,6 +23,10 @@ class Agents
                 $step = StaticFactory::nextStep($step);
             }
         }
+
+        if($status == 'end'){
+            return '';
+        }
         return 'Kocmo\\Exchange\\Agents::start(' . "$step, '$status'" . ');';
     }
 }
