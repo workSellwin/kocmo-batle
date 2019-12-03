@@ -91,6 +91,9 @@ class Rest extends Helper
         $this->products = $this->getProductsId($arUid);
         $restIds = $this->getRestIds();
 
+//        pr($this->storeXmlId, 14);
+//        die();
+
         foreach ($this->products as $id => $xml_id) {
 
             if( isset($arReq[$xml_id]) ){
@@ -105,26 +108,29 @@ class Rest extends Helper
 
                             $restId = $restIds[$xml_id][$storeXmlId];
 
+//                            $result = Catalog\StoreProductTable::update($restId, [
+//                                "PRODUCT_ID" => $id,
+//                                "AMOUNT" => $amount,
+//                                "STORE_ID" => array_search($storeXmlId, $this->stores)
+//                            ]);
 
-
-                            $result = Catalog\StoreProductTable::update($restId, [
+                            pr($restId, 14);
+                            pr([
                                 "PRODUCT_ID" => $id,
                                 "AMOUNT" => $amount,
                                 "STORE_ID" => array_search($storeXmlId, $this->stores)
-                            ]);
-
-//                            pr($restId, 14);
-//                            pr($result, 14);
-//                            die();
+                            ], 14);
+                            die();
                         }
                         else{
                             //pr($restId, 14);
                             //die('fff');
-                            $result = Catalog\StoreProductTable::add([
-                                "PRODUCT_ID" => $id,
-                                "AMOUNT" => $amount,
-                                "STORE_ID" => array_search($storeXmlId, $this->stores)
-                            ]);
+
+//                            $result = Catalog\StoreProductTable::add([
+//                                "PRODUCT_ID" => $id,
+//                                "AMOUNT" => $amount,
+//                                "STORE_ID" => array_search($storeXmlId, $this->stores)
+//                            ]);
                         }
 
                         if($result->isSuccess()) {
@@ -221,7 +227,7 @@ class Rest extends Helper
 
             $obProduct->Update($id, ['QUANTITY' => $quantity]);
         }
-
+//обязательно
 //        $res = Catalog\ProductTable::getList([
 //            'filter' => ["<TIMESTAMP_X" => $this->timestamp, '>QUANTITY' => 0]
 //        ]);
@@ -241,7 +247,7 @@ class Rest extends Helper
         $res = Catalog\StoreProductTable::getList([
             'filter' => ['!AMOUNT' => 0],
             'limit' => 2000,
-            'offset' => 0
+            'offset' => 2000 * 2
         ]);
         $products = [];
 
