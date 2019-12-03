@@ -19,14 +19,18 @@ class Rest extends Helper
     function __construct()
     {
         Loader::includeModule('catalog');
+
+        $treeBuilder = new \Kocmo\Exchange\Tree\Rest();
+        parent::__construct($treeBuilder);
         $this->stores = $this->getStores();
         $storeXmlId = $this->getCurStore();
 
         if( !empty($storeXmlId) && $this->utils->checkRef($storeXmlId) && in_array($storeXmlId, $this->stores) ){
-            $this->storeXmlId = $storeXmlId;
 
-            $treeBuilder = new \Kocmo\Exchange\Tree\Rest($storeXmlId);
-            parent::__construct($treeBuilder);
+            $this->storeXmlId = $storeXmlId;
+            $this->treeBuilder->setStoreRest($storeXmlId);
+//            $treeBuilder = new \Kocmo\Exchange\Tree\Rest($storeXmlId);
+//            parent::__construct($treeBuilder);
         }
         else{
             $this->storeXmlId = false;
@@ -48,7 +52,6 @@ class Rest extends Helper
                 reset($this->stores);
                 $curXmlId = current($this->stores);
                 $this->utils->setModuleData($this->arParams['LAST_STORE_ID'], key($this->stores));
-                //$_SESSION['LAST_STORE_ID'] = key($this->stores);
             }
             else {
 
@@ -56,14 +59,13 @@ class Rest extends Helper
 
                     if ($last) {
                         $this->utils->setModuleData($this->arParams['LAST_STORE_ID'], $id);
-                        //$_SESSION['LAST_STORE_ID'] = $id;
-                        $curXmlId = $xml;
                         break;
                     }
 
-                    $lastStoreId = $this->utils->getModuleData($this->arParams['LAST_STORE_ID']);
+                    //$lastStoreId = $this->utils->getModuleData($this->arParams['LAST_STORE_ID']);
 
                     if ($id == $lastStoreId) {
+                        $curXmlId = $xml;
                         $last = true;
                     }
                 }
@@ -79,11 +81,13 @@ class Rest extends Helper
             $this->resetCurStore();
             $this->status = 'end';
             $this->updateAvailable();
+            $this->updateElementActivity();
             return false;
         }
 
         $arReq = $this->treeBuilder->getRequestArr();//product xml_id => store xml_id => count
         $arUid = array_keys($arReq);
+
         $this->products = $this->getProductsId($arUid);
         $restIds = $this->getRestIds();
 
@@ -101,13 +105,21 @@ class Rest extends Helper
 
                             $restId = $restIds[$xml_id][$storeXmlId];
 
+
+
                             $result = Catalog\StoreProductTable::update($restId, [
                                 "PRODUCT_ID" => $id,
                                 "AMOUNT" => $amount,
                                 "STORE_ID" => array_search($storeXmlId, $this->stores)
                             ]);
+
+//                            pr($restId, 14);
+//                            pr($result, 14);
+//                            die();
                         }
                         else{
+                            //pr($restId, 14);
+                            //die('fff');
                             $result = Catalog\StoreProductTable::add([
                                 "PRODUCT_ID" => $id,
                                 "AMOUNT" => $amount,
@@ -124,9 +136,12 @@ class Rest extends Helper
                     } catch(\Exception $e){
                         //
                     }
+
+                    //echo '<pre>', print_r($updateStoreProductIds, true), '</pre>';
+                    //die('eee');
                 }
-                $lastStoreId = $this->utils->getModuleData($this->arParams['LAST_STORE_ID']);
-                $this->clearOldRest($lastStoreId, $updateStoreProductIds);
+               // $lastStoreId = $this->utils->getModuleData($this->arParams['LAST_STORE_ID']);
+                //$this->clearOldRest($lastStoreId, $updateStoreProductIds);//?
             }
         }
         $this->status = 'run';
@@ -181,7 +196,7 @@ class Rest extends Helper
         return $storeProducts;
     }
 
-    private function updateAvailable(){
+    public function updateAvailable(){
 
         $res = Catalog\StoreProductTable::getList(['filter' => ['STORE_ID' => [17, 32]]]);//только Независимости 6
         $productAmount = [];
@@ -195,33 +210,69 @@ class Rest extends Helper
             }
         }
         $obProduct = new \CCatalogProduct();
-        $el = new \CIBlockElement();
+        //$el = new \CIBlockElement();
 
         foreach ($productAmount as $id => $quantity) {
 
             if($quantity < 2){
                 $quantity = 0;
+                //$el->Update($id, ['ACTIVE' => 'N']);
             }
 
             $obProduct->Update($id, ['QUANTITY' => $quantity]);
         }
 
-        $res = Catalog\ProductTable::getList([
-            'filter' => ["<TIMESTAMP_X" => $this->timestamp, '>QUANTITY' => 0]
-        ]);
-
-        while($row = $res->fetch()){
-            $obProduct->Update($row['ID'], ['QUANTITY' => 0]);
-            $el->Update($row['ID'], ['ACTIVE' => 'N']);
-        }
+//        $res = Catalog\ProductTable::getList([
+//            'filter' => ["<TIMESTAMP_X" => $this->timestamp, '>QUANTITY' => 0]
+//        ]);
+//
+//        while($row = $res->fetch()){
+//            $obProduct->Update($row['ID'], ['QUANTITY' => 0]);
+//            //$el->Update($row['ID'], ['ACTIVE' => 'N']);
+//        }
     }
 
     public function resetCurStore(){
         $this->utils->setModuleData($this->arParams['LAST_STORE_ID'], "");
-        //unset($_SESSION['LAST_STORE_ID']);
+    }
+
+    public function updateElementActivity(){
+
+        $res = Catalog\StoreProductTable::getList([
+            'filter' => ['!AMOUNT' => 0],
+            'limit' => 2000,
+            'offset' => 0
+        ]);
+        $products = [];
+
+        while($row = $res->fetch() ){
+
+            if(!isset($products['PRODUCT_ID'])){
+                $products[$row['PRODUCT_ID']] = $row['AMOUNT'];
+            }
+            else{
+                $products[$row['PRODUCT_ID']] = $products[$row['PRODUCT_ID']] + $row['AMOUNT'];
+            }
+        }
+
+        $el = new \CIBlockElement();
+
+        foreach($products as $id => $amount){
+
+            if($amount < 2){
+                $el->Update($id, ['ACTIVE' => 'N']);
+            }
+            else{
+                $el->Update($id, ['ACTIVE' => 'Y']);
+            }
+        }
     }
 
     private function clearOldRest($storeId, $updateStoreProductIds){
+
+        if(!count($updateStoreProductIds)){
+            return false;
+        }
 
         $res = Catalog\StoreProductTable::getList([
             'filter' => ['STORE_ID' => $storeId, '!PRODUCT_ID' => $updateStoreProductIds]

@@ -6,12 +6,12 @@ $rsUser = CUser::GetByID($id);
 $arUser = $rsUser->Fetch();
 $arResult['UF_NEWS_SUBSCRIBE'] = $arUser['UF_NEWS_SUBSCRIBE'];
 $arResult['AR_USER'] = $arUser;
-//pr($arUser);
+
 $arAges = [];
 $arEyes = [];
 $arSkin = [];
 $arHair = [];
-//pr($arUser);
+
 if( \Bitrix\Main\Loader::includeModule('highloadblock') ){
 
     $hlblock = HL\HighloadBlockTable::getById(3)->fetch();
@@ -42,11 +42,6 @@ if( \Bitrix\Main\Loader::includeModule('highloadblock') ){
     $arResult['HL_SKINS'] = $arSkin;
     $arResult['HL_HAIRS'] = $arHair;
 }
-
-//$street = "";
-//$house = "";
-//$building = "";
-//$apartment = "";
 
 if( mb_strlen($arUser['PERSONAL_STREET']) > 10 && strpos($arUser['PERSONAL_STREET'], '%%') === 0 ) {
 
@@ -123,4 +118,6 @@ if( isset($_POST) && isset($_POST['submit']) && count($_POST)){
     header("Location: " . $APPLICATION->GetCurPage() );
     exit();
 }
-
+if( strpos($arResult['AR_USER']['PERSONAL_PHONE'], '+' !== 0) ) {
+    $arResult['AR_USER']['PERSONAL_PHONE'] = '+' . $arResult['AR_USER']['PERSONAL_PHONE'];//чтобы не конфликтовало с placeholder'ом
+}

@@ -3,16 +3,19 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     document.forms['form_auth'].addEventListener('submit', function (event) {
-        console.log(event);
+
+
         let userLogin = document.forms['form_auth'].querySelector('input[name="USER_LOGIN"]').value;
 
         if(!userLogin){
             return false;
         }
+        //event.preventDefault();
 
         userLogin = userLogin.replace(/[^+\d]/g, '');
+        console.log(userLogin);
+        if( /(\+)?\d{12}/.test(userLogin) ) {
 
-        if( /\+\d{12}/.test(userLogin) ) {
             let actionUrl = document.forms['form_auth'].action;
 
             let xhr = new XMLHttpRequest();

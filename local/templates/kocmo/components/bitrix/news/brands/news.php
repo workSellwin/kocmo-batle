@@ -34,8 +34,8 @@ else{
 }
 
 $cache = Bitrix\Main\Data\Cache::createInstance();
-$cacheTime = 86400;
-$cacheId = 'brands2';
+$cacheTime = 600;
+$cacheId = 'brands5';
 
 if ($cache->initCache($cacheTime, $cacheId))
 {
@@ -47,6 +47,7 @@ elseif ($cache->startDataCache())
 	$brandsFirstLetter = [];
 
 	while($brandField = $res->fetch()){
+
 		$letter = mb_substr($brandField["NAME"], 0, 1);
 
 		if(!empty($letter) ){
@@ -62,8 +63,8 @@ elseif ($cache->startDataCache())
 	$cache->endDataCache($brandsFirstLetter);
 }
 
-$cacheTime = 86400 * 7;
-$cacheId = 'filter_prop';
+$cacheTime = 86400;
+$cacheId = 'filter_prop1';
 
 if ($cache->initCache($cacheTime, $cacheId))
 {
@@ -83,15 +84,17 @@ elseif ($cache->startDataCache())
 	}
 	$cache->endDataCache($filterData);
 }
+
+//echo '<pre>', print_r($arParams, true), '</pre>';
 ?>
 
 <?$APPLICATION->IncludeComponent(
 	"bitrix:news.list",
-	"",
+	".default",
 	Array(
 		"FILTER_PROPERTY_ID" => $filterData['FILTER_PROPERTY_ID'],
 		"BRANDS_FIRST_LETTER" => $brandsFirstLetter,
-		"IBLOCK_TYPE" => $arParams["IBLOCK_TYPE"],
+		//"IBLOCK_TYPE" => $arParams["IBLOCK_TYPE"],
 		"IBLOCK_ID" => $arParams["IBLOCK_ID"],
 		"NEWS_COUNT" => $arParams["NEWS_COUNT"],
 		"SORT_BY1" => $arParams["SORT_BY1"],

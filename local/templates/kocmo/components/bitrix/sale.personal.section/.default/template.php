@@ -1,5 +1,5 @@
 <? if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die(); ?>
-<form action="<?=$APPLICATION->GetCurPage();?>" method="POST" class="cabinet-profile-form">
+<form action="<?= $APPLICATION->GetCurPage(); ?>" method="POST" class="cabinet-profile-form">
     <div class="cabinet-profile container">
         <div class="cabinet-profile__title">Личные данные</div>
 
@@ -7,14 +7,16 @@
             <div class="cabinet-profile__fields-row">
                 <div class="cabinet-profile__fields-half">
                     <div class="form-field">
-                        <input name="user-name" value="<?=$arResult['AR_USER']['NAME']?>" class="form-field__input" type="text"
+                        <input name="user-name" value="<?= $arResult['AR_USER']['NAME'] ?>" class="form-field__input"
+                               type="text"
                                placeholder="Введите ваше имя">
                     </div>
                 </div>
 
                 <div class="cabinet-profile__fields-half">
                     <div class="form-field">
-                        <input name="user-lastname" value="<?=$arResult['AR_USER']['LAST_NAME']?>" class="form-field__input" type="text"
+                        <input name="user-lastname" value="<?= $arResult['AR_USER']['LAST_NAME'] ?>"
+                               class="form-field__input" type="text"
                                placeholder="Введите вашу фамилию">
                     </div>
                 </div>
@@ -23,14 +25,15 @@
             <div class="cabinet-profile__fields-row">
                 <div class="cabinet-profile__fields-half">
                     <div class="form-field">
-                        <input name="user-email" value="<?=$arResult['AR_USER']['EMAIL']?>" class="form-field__input" type="email"
+                        <input name="user-email" value="<?= $arResult['AR_USER']['EMAIL'] ?>" class="form-field__input"
+                               type="email"
                                placeholder="Введите ваш email">
                     </div>
                 </div>
 
                 <div class="cabinet-profile__fields-half">
                     <div class="form-field">
-                        <input name="user-phone" value="<?=$arResult['AR_USER']['PERSONAL_PHONE']?>"
+                        <input name="user-phone" value="<?= $arResult['AR_USER']['PERSONAL_PHONE'] ?>"
                                class="form-field__input phone-mask js_phone-mask"
                                type="text"
                                placeholder="+375__-___-__-__">
@@ -55,7 +58,7 @@
                     ?>
                     <div class="cabinet-profile__fields-half">
                         <div class="form-field">
-                            <input name="user-street" value="<?=$street?>" class="form-field__input" type="text"
+                            <input name="user-street" value="<?= $street ?>" class="form-field__input" type="text"
                                    placeholder="Введите вашу улицу">
                         </div>
                     </div>
@@ -64,19 +67,19 @@
                 <div class="cabinet-profile__fields-outer-half">
                     <div class="cabinet-profile__fields-third">
                         <div class="form-field">
-                            <input name="user-house" value="<?=$house?>" class="form-field__input" type="text"
+                            <input name="user-house" value="<?= $house ?>" class="form-field__input" type="text"
                                    placeholder="Дом">
                         </div>
                     </div>
                     <div class="cabinet-profile__fields-third">
                         <div class="form-field">
-                            <input name="user-building" value="<?=$building?>" class="form-field__input" type="text"
+                            <input name="user-building" value="<?= $building ?>" class="form-field__input" type="text"
                                    placeholder="Корпус">
                         </div>
                     </div>
                     <div class="cabinet-profile__fields-third">
                         <div class="form-field">
-                            <input name="user-apartment" value="<?=$apartment?>" class="form-field__input" type="text"
+                            <input name="user-apartment" value="<?= $apartment ?>" class="form-field__input" type="text"
                                    placeholder="Квартира">
                         </div>
                     </div>
@@ -85,7 +88,9 @@
 
             <div class="cabinet-profile__fields-row">
                 <label class="checkbox js_checkbox cabinet-profile__fields-checkbox">
-                    <input type="checkbox" <?if(!empty($arResult['UF_NEWS_SUBSCRIBE'])):?>checked="checked"<?endif;?> name="user-news-subscribe">
+                    <input type="checkbox"
+                           <? if (!empty($arResult['UF_NEWS_SUBSCRIBE'])): ?>checked="checked"<? endif; ?>
+                           name="user-news-subscribe">
                     Подписка на новости косметики и парфюмерии
                 </label>
             </div>
@@ -103,14 +108,14 @@
                     <div class="cabinet-profile__fields-row">
                         <div class="form-field form-field--full-width">
                             <select name="user-age" class="js_custom-select">
-                                <option value="default"<?if(empty($arResult['AR_USER']['UF_AGE'])):?> selected<?endif;?>>
+                                <option value="default"<? if (empty($arResult['AR_USER']['UF_AGE'])): ?> selected<? endif; ?>>
                                     Выберите ваш возраст
                                 </option>
-                                <?foreach( $arResult['HL_AGES'] as $age ):?>
-                                    <option value="<?=$age['ID']?>"<?if( $arResult['AR_USER']['UF_AGE'] == $age['ID']):?> selected<?endif;?>>
-                                        <?=$age['UF_NAME']?>
+                                <? foreach ($arResult['HL_AGES'] as $age): ?>
+                                    <option value="<?= $age['ID'] ?>"<? if ($arResult['AR_USER']['UF_AGE'] == $age['ID']): ?> selected<? endif; ?>>
+                                        <?= $age['UF_NAME'] ?>
                                     </option>
-                                <?endforeach;?>
+                                <? endforeach; ?>
                             </select>
                         </div>
                     </div>
@@ -118,12 +123,14 @@
                     <div class="cabinet-profile__fields-row">
                         <div class="form-field form-field--full-width">
                             <select name="user-eye" class="js_custom-select">
-                                <option value="default"<?if(empty($arResult['AR_USER']['UF_EYE_COLOR'])):?> selected<?endif;?>>Выберите цвет глаз</option>
-                                <?foreach( $arResult['HL_EYES'] as $eye ):?>
-                                    <option value="<?=$eye['ID']?>"<?if( $arResult['AR_USER']['UF_EYE_COLOR'] == $eye['ID']):?> selected<?endif;?>>
-                                        <?=$eye['UF_NAME']?>
+                                <option value="default"<? if (empty($arResult['AR_USER']['UF_EYE_COLOR'])): ?> selected<? endif; ?>>
+                                    Выберите цвет глаз
+                                </option>
+                                <? foreach ($arResult['HL_EYES'] as $eye): ?>
+                                    <option value="<?= $eye['ID'] ?>"<? if ($arResult['AR_USER']['UF_EYE_COLOR'] == $eye['ID']): ?> selected<? endif; ?>>
+                                        <?= $eye['UF_NAME'] ?>
                                     </option>
-                                <?endforeach;?>
+                                <? endforeach; ?>
                             </select>
                         </div>
                     </div>
@@ -131,12 +138,14 @@
                     <div class="cabinet-profile__fields-row">
                         <div class="form-field form-field--full-width">
                             <select name="user-skin" class="js_custom-select">
-                                <option value="default"<?if(empty($arResult['AR_USER']['UF_SKIN'])):?> selected<?endif;?>>Выберите тип кожи</option>
-                                <?foreach( $arResult['HL_SKINS'] as $skin ):?>
-                                    <option value="<?=$skin['ID']?>"<?if( $arResult['AR_USER']['UF_SKIN'] == $skin['ID']):?> selected<?endif;?>>
-                                        <?=$skin['UF_NAME']?>
+                                <option value="default"<? if (empty($arResult['AR_USER']['UF_SKIN'])): ?> selected<? endif; ?>>
+                                    Выберите тип кожи
+                                </option>
+                                <? foreach ($arResult['HL_SKINS'] as $skin): ?>
+                                    <option value="<?= $skin['ID'] ?>"<? if ($arResult['AR_USER']['UF_SKIN'] == $skin['ID']): ?> selected<? endif; ?>>
+                                        <?= $skin['UF_NAME'] ?>
                                     </option>
-                                <?endforeach;?>
+                                <? endforeach; ?>
                             </select>
                         </div>
                     </div>
@@ -144,12 +153,14 @@
                     <div class="cabinet-profile__fields-row">
                         <div class="form-field form-field--full-width">
                             <select name="user-hair" class="js_custom-select">
-                                <option value="default"<?if(empty($arResult['AR_USER']['UF_HAIR'])):?> selected<?endif;?>>Выберите цвет волос</option>
-                                <?foreach( $arResult['HL_HAIRS'] as $hair ):?>
-                                    <option value="<?=$hair['ID']?>"<?if( $arResult['AR_USER']['UF_HAIR'] == $hair['ID']):?> selected<?endif;?>>
-                                        <?=$hair['UF_NAME']?>
+                                <option value="default"<? if (empty($arResult['AR_USER']['UF_HAIR'])): ?> selected<? endif; ?>>
+                                    Выберите цвет волос
+                                </option>
+                                <? foreach ($arResult['HL_HAIRS'] as $hair): ?>
+                                    <option value="<?= $hair['ID'] ?>"<? if ($arResult['AR_USER']['UF_HAIR'] == $hair['ID']): ?> selected<? endif; ?>>
+                                        <?= $hair['UF_NAME'] ?>
                                     </option>
-                                <?endforeach;?>
+                                <? endforeach; ?>
                             </select>
                         </div>
                     </div>
@@ -159,7 +170,7 @@
                     <!-- DiscountCard.discountCardAJAX() -->
                     <div class="cabinet-profile__discount discount-card js_discount-card preloader-wrap">
 
-                        <? if( empty($arResult['AR_USER']['UF_CARD_KOCMO']) ): ?>
+                        <? if (empty($arResult['AR_USER']['UF_CARD_KOCMO'])): ?>
 
                             <div class="discount-card__header js_discount-card__header">
                                 <div class="discount-card__submit-one js_discount-card__submit-one btn">
@@ -188,7 +199,7 @@
                                 </svg>
                             </div>
 
-                        <?else:?>
+                        <? else: ?>
 
                             <div class="discount-card__header discount-card--four js_discount-card__header">
                                 <div class="discount-card__header-label">Ваша дисконтная карта:</div>
@@ -197,7 +208,8 @@
                             </div>
 
                             <div class="discount-card__content discount-card__content--four js_discount-card__content">
-                                <img src="/local/templates/kocmo/imposition/build/assets/images/discount-request.png" alt="">
+                                <img src="/local/templates/kocmo/imposition/build/assets/images/discount-request.png"
+                                     alt="">
                             </div>
 
                             <div class="preloader" style="display: none;">
@@ -205,56 +217,50 @@
                                     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#svg-preloader"></use>
                                 </svg>
                             </div>
-
                         <? endif; ?>
                     </div>
-
-
                 </div>
             </div>
         </div>
     </div>
-
     <hr>
+    <div class="cabinet-profile container">
+        <div class="cabinet-profile__title">Сменить пароль</div>
 
-        <div class="cabinet-profile container">
-            <div class="cabinet-profile__title">Сменить пароль</div>
+        <div class="cabinet-profile__fields">
+            <div class="cabinet-profile__fields-row">
+                <div class="cabinet-profile__fields-half">
+                    <div class="form-field">
+                        <input name="user-old-pass" value="" class="form-field__input" type="text"
+                               placeholder="Введите старый пароль">
+                    </div>
+                </div>
+            </div>
 
-            <div class="cabinet-profile__fields">
-                <div class="cabinet-profile__fields-row">
-                    <div class="cabinet-profile__fields-half">
-                        <div class="form-field">
-                            <input name="user-old-pass" value="" class="form-field__input" type="text"
-                                   placeholder="Введите старый пароль">
-                        </div>
+            <div class="cabinet-profile__fields-row">
+                <div class="cabinet-profile__fields-half">
+                    <div class="form-field">
+                        <input name="user-new-pass" value="" class="form-field__input" type="text"
+                               placeholder="Введите новый пароль">
                     </div>
                 </div>
 
-                <div class="cabinet-profile__fields-row">
-                    <div class="cabinet-profile__fields-half">
-                        <div class="form-field">
-                            <input name="user-new-pass" value="" class="form-field__input" type="text"
-                                   placeholder="Введите новый пароль">
-                        </div>
-                    </div>
-
-                    <div class="cabinet-profile__fields-half">
-                        <div class="form-field">
-                            <input name="user-confirm-pass" value="" class="form-field__input" type="text"
-                                   placeholder="Повторите новый пароль">
-                        </div>
+                <div class="cabinet-profile__fields-half">
+                    <div class="form-field">
+                        <input name="user-confirm-pass" value="" class="form-field__input" type="text"
+                               placeholder="Повторите новый пароль">
                     </div>
                 </div>
             </div>
         </div>
-
+    </div>
     <hr>
-
     <div class="cabinet-profile cabinet-profile--footer container">
         <div class="cabinet-profile__title"></div>
 
         <div class="cabinet-profile__fields">
-            <input type="reset" class="btn btn--transparent cabinet-profile__reset js_custom-select-reset" value="Отменить">
+            <input type="reset" class="btn btn--transparent cabinet-profile__reset js_custom-select-reset"
+                   value="Отменить">
 
             <input name="submit" type="submit" class="btn cabinet-profile__submit" value="Сохранить изменения">
         </div>

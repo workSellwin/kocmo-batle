@@ -11,7 +11,7 @@
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
-
+//echo '<pre>', print_r($arResult['ITEMS'], true), '</pre>';
 if(count($arResult['ITEMS'])){
 
     $cache = Bitrix\Main\Data\Cache::createInstance();
@@ -20,8 +20,8 @@ if(count($arResult['ITEMS'])){
     foreach ($arResult['ITEMS'] as $arItem) {
         $ids .= $arItem['ID'];
     }
-    $cacheTime = 86400 * 7;
-    $cacheId = 'bindXmlId' . md5($ids);
+    $cacheTime = 86400;
+    $cacheId = 'bindXmlId2' . md5($ids);
 
     if ($cache->initCache($cacheTime, $cacheId))
     {

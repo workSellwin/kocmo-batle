@@ -52,12 +52,12 @@ if ($arResult['AUTHORIZED']) {
         <? if ($arResult['STORE_PASSWORD'] == 'Y') { ?>
             <label class="checkbox js_checkbox">
                 <input type="checkbox" id="USER_REMEMBER" name="<?= $arResult['FIELDS']['remember']; ?>"
-                       value="Y" checked="checked">Запомнить
-                меня
+                       value="Y" checked="checked">
+                Запомнить меня
             </label>
         <? } ?>
-        <a href="<?= $arParams['AUTH_FORGOT_PASSWORD_URL'] ?>" class="form-login__forget-password link">Забыли
-            пароль?</a>
+        <a href="<?= $arParams['AUTH_FORGOT_PASSWORD_URL'] ?>" class="form-login__forget-password link">
+            Забыли пароль?</a>
     </div>
 
     <? if ($arResult['CAPTCHA_CODE']): ?>
