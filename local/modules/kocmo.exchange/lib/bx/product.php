@@ -49,11 +49,10 @@ class Product extends Helper
 
             $rowId = $row['ROW_ID'];
             $detailPic = $row['DETAIL_PICTURE'];
-            $type = $row['TYPE'];
-            unset($row['DETAIL_PICTURE'], $row['ROW_ID'], $row['TYPE']);
+            unset($row['DETAIL_PICTURE'], $row['ROW_ID']);
 
             try {
-                $id = $this->addProduct($row, $oElement, $rowId, $type);
+                $id = $this->addProduct($row, $oElement, $rowId);
             } catch (\Exception $e) {
                 $this->errors[] = $e;
             }
@@ -211,17 +210,8 @@ class Product extends Helper
                 }
             }
 
-            if($row['PARENT'] === ''){
-                $type = 1;//простой товар
-            }
-            else{
-                $type = 3;//товар с предложениями
-            }
-
-
             $arFields = array(
                 "ROW_ID" => $rowId,
-                "TYPE" => $type,
                 "ACTIVE" => "Y",
                 "IBLOCK_ID" => $this->catalogId,
                 "IBLOCK_SECTION" => $arIBlockSectionId,
@@ -273,11 +263,10 @@ class Product extends Helper
      * @param array $arFields
      * @param bool $oElement
      * @param bool $rowId
-     * @param int $type
      * @return int
      * @throws \Exception
      */
-    public function addProduct(array $arFields, $oElement = false, $rowId = false, $type = 1)
+    public function addProduct(array $arFields, $oElement = false, $rowId = false)
     {
         if ($oElement == false) {
             $oElement = new \CIBlockElement();
@@ -296,7 +285,7 @@ class Product extends Helper
                     $deleteResult = Exchange\DataTable::delete($rowId);
                 }
 
-                Catalog\Model\Product::add(['fields' => ['ID' => $id, 'TYPE' => $type]]);//add to b_catalog_product
+                Catalog\Model\Product::add(['fields' => ['ID' => $id]]);//add to b_catalog_product
             } else {
                 throw new \Exception("Error: " . $oElement->LAST_ERROR);
             }
@@ -306,16 +295,12 @@ class Product extends Helper
             if ($oElement->Update($prod, $arFields)) {
 
                 $id = $prod;
-                Catalog\Model\Product::update($id, ['fields' => ['TYPE' => $type]]);//потом можно убрать?
 
                 if (intval($rowId) > 0) {
                     $deleteResult = Exchange\DataTable::delete($rowId);
                 }
             }
         }
-//        echo '<pre>' . print_r($arFields, true) . '</pre>';
-//        echo '<pre>' . print_r($prod, true) . '</pre>';
-//        die('ff');
         return intval($id);
     }
 
