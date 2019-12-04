@@ -18,9 +18,6 @@ final class StaticFactory
             case '20':
                 return new Bx\Dbproduct();
                 break;
-//            case '30':
-//                return new Bx\Dboffer();
-//                break;
             case '30':
                 return new Bx\Product();
                 break;

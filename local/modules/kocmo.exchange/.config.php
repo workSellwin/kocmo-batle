@@ -21,6 +21,7 @@ return [
         'PRODUCT_LAST_UID' => 'PRODUCT_LAST_UID',
         'OFFER_LAST_UID' => 'OFFER_LAST_UID',
         'LAST_STORE_ID' => 'LAST_STORE_ID',
+        'PROP_REF' => 'CML2_LINK',
     ],
     "tree" => [
         'PRODUCT_LIMIT' => 500,

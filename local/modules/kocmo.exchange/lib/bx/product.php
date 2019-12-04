@@ -16,6 +16,7 @@ use \Bitrix\Catalog,
 class Product extends Helper
 {
     private $productMatchXmlId = [];
+    protected $offerMatchXmlId = [];
     protected $arProperty = [];
     protected $arEnumMatch = [];
     protected $defaultLimit = 1000;
@@ -23,7 +24,6 @@ class Product extends Helper
 
     /**
      * Product constructor.
-     * @throws \Bitrix\Main\LoaderException
      */
     public function __construct()
     {
@@ -201,6 +201,15 @@ class Product extends Helper
                 }
             }
 
+            if( $this->utils->checkRef($row["PARENT"]) ) {
+
+                $parentId = $this->getProductFromIBlock($row["PARENT"]);
+
+                if(intval($parentId) > 0) {
+                    $props[$this->arParams['PROP_REF']] = $parentId;
+                }
+            }
+
             $arIBlockSectionId = [];
 
             if (is_array($row[$this->arParams['PARENT_ID']])) {
@@ -222,7 +231,6 @@ class Product extends Helper
                 "DETAIL_PICTURE" => $row[$this->arParams['PIC_FILE']],
                 "PROPERTY_VALUES" => $props
             );
-
             yield $arFields;
         }
     }
@@ -272,7 +280,13 @@ class Product extends Helper
             $oElement = new \CIBlockElement();
         }
 
-        $prod = $this->getProductFromIblock($arFields["XML_ID"]);
+        if( empty($arFields["PROPERTY_VALUES"]["CML2_LINK"]) ){
+            $prod = $this->getProductFromIBlock($arFields["XML_ID"]);
+        }
+        else{
+            $prod = $this->getOfferFromIBlock($arFields["XML_ID"]);
+        }
+
         $id = 0;
 
         if ($prod === false) {
@@ -304,7 +318,7 @@ class Product extends Helper
         return intval($id);
     }
 
-    private function getProductFromIblock($xml_id)
+    private function getProductFromIBlock($xml_id)
     {
 
         if (!is_string($xml_id)) {
@@ -318,19 +332,46 @@ class Product extends Helper
         }
     }
 
+    private function getOfferFromIBlock($xml_id)
+    {
+
+        if (!is_string($xml_id)) {
+            return false;
+        }
+
+        if (isset($this->offerMatchXmlId[$xml_id])) {
+            return $this->offerMatchXmlId[$xml_id];
+        } else {
+            return false;
+        }
+    }
+
     private function setMatchXmlId()
     {
 
+        if($this->catalogId == $this->arParams['IBLOCK_CATALOG_ID']){
+            $iBlockIds = $this->catalogId;
+        }
+        else{
+            $iBlockIds = [$this->catalogId, $this->arParams['IBLOCK_CATALOG_ID']];
+        }
+
         $res = \CIBlockElement::GetList(
             [],
-            ["IBLOCK_ID" => $this->catalogId],
+            //["IBLOCK_ID" => $this->catalogId],
+            ["IBLOCK_ID" => $iBlockIds],
             false,
             false,
             ["ID", "IBLOCK_ID", "XML_ID"]
         );
 
         while ($fields = $res->fetch()) {
-            $this->productMatchXmlId[$fields["XML_ID"]] = $fields["ID"];
+            if($fields["IBLOCK_ID"] == $this->arParams['IBLOCK_CATALOG_ID']) {
+                $this->productMatchXmlId[$fields["XML_ID"]] = $fields["ID"];
+            }
+            else{
+                $this->offerMatchXmlId[$fields["XML_ID"]] = $fields["ID"];
+            }
         }
     }
 }

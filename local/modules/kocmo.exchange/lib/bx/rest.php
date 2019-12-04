@@ -193,29 +193,100 @@ class Rest extends Helper
     public function updateAvailable()
     {
 
-        $res = Catalog\StoreProductTable::getList(['filter' => ['STORE_ID' => [17, 32]]]);//только Независимости 6
+        $res = \CIBlockElement::GetList(
+            [],
+            ["IBLOCK_ID" => [2, 3]],
+            false,
+            false,
+            ['ID', 'ACTIVE']
+        );
+        $ids = [];
+
+        while ($fields = $res->fetch()) {
+            $ids[$fields['ID']] = $fields['ACTIVE'];
+        }
+
+        $res = Catalog\StoreProductTable::getList([
+            'filter' => [
+                'STORE_ID' => [17, 32],
+                //'>AMOUNT' => 1,
+            ]
+        ]);
+
         $productAmount = [];
 
         while ($row = $res->fetch()) {
 
             if (isset($productAmount[$row['PRODUCT_ID']])) {
-                $productAmount[$row['PRODUCT_ID']] += $row['AMOUNT'];
+
+                if($row['AMOUNT'] > 1){
+                    $productAmount[$row['PRODUCT_ID']] += $row['AMOUNT'];
+                }
+                else{
+                    $productAmount[$row['PRODUCT_ID']] += 0;
+                }
+
             } else {
-                $productAmount[$row['PRODUCT_ID']] = $row['AMOUNT'];
+                if($row['AMOUNT'] > 1) {
+                    $productAmount[$row['PRODUCT_ID']] = $row['AMOUNT'];
+                }
+                else{
+                    $productAmount[$row['PRODUCT_ID']] += 0;
+                }
             }
         }
+        unset($row);
+
+        $iterator = \Bitrix\Catalog\ProductTable::getList([
+            //'filter' => ["ID" => array_keys($productAmount)]
+        ]);
+        $productQuantity = [];
+
+        while($row = $iterator->fetch()){
+            $productQuantity[$row['ID']] = $row['QUANTITY'];
+        }
+
+        //pr($productQuantity, 14);
+        //return;
         $obProduct = new \CCatalogProduct();
-        //$el = new \CIBlockElement();
+        $el = new \CIBlockElement();
+
+        //$productAvailable = [];
 
         foreach ($productAmount as $id => $quantity) {
 
             if ($quantity < 2) {
+                //$productAvailable[$id] = false;
                 $quantity = 0;
                 //$el->Update($id, ['ACTIVE' => 'N']);
             }
+            else{
+                //$productAvailable[$id] = true;
+                if($ids[$id] == 'N') {
+                    $el->Update($id, ['ACTIVE' => 'Y']);
+                }
+            }
 
-            $obProduct->Update($id, ['QUANTITY' => $quantity]);
+            if($quantity != $productQuantity[$id]){
+                $productQuantity[$id] = $quantity;
+                $obProduct->Update($id, ['QUANTITY' => $quantity]);
+            }
         }
+
+        unset($productAmount, $id, $quantity, $row);
+//pr(count($productQuantity), 14);return;
+        foreach($productQuantity as $id => $quantity){
+
+            if($quantity != 0 && $ids[$id] != 'Y'){
+                $el->Update($id, ['ACTIVE' => 'Y']);
+            }
+            elseif($quantity == 0 && $ids[$id] != 'N'){
+                $el->Update($id, ['ACTIVE' => 'N']);
+            }
+        }
+
+
+
 //обязательно
 //        $res = Catalog\ProductTable::getList([
 //            'filter' => ["<TIMESTAMP_X" => $this->timestamp, '>QUANTITY' => 0]
@@ -234,8 +305,13 @@ class Rest extends Helper
 
     public function updateElementActivity()
     {
-
-        $res = \CIBlockElement::GetList([], ["IBLOCK_ID" => 2], false, ["nPageSize" => 5000, "iNumPage" => 5], ['ID']);
+        $res = \CIBlockElement::GetList(
+            [],
+            ["IBLOCK_ID" => 2],
+            false,
+            ["nPageSize" => 5000, "iNumPage" => 1],
+            ['ID']
+        );
         $ids = [];
 
         while ($fields = $res->fetch()) {
@@ -246,12 +322,11 @@ class Rest extends Helper
             return false;
         }
         $res = Catalog\StoreProductTable::getList([
-            'filter' => ['!AMOUNT' => 0, "PRODUCT_ID" => $ids],
+            'filter' => [/*'!AMOUNT' => 0,*/ "PRODUCT_ID" => $ids],
         ]);
         $products = [];
 
         while ($row = $res->fetch()) {
-
             if (!isset($products['PRODUCT_ID'])) {
                 $products[$row['PRODUCT_ID']] = $row['AMOUNT'];
             } else {
@@ -269,6 +344,78 @@ class Rest extends Helper
                 $el->Update($id, ['ACTIVE' => 'Y']);
             }
         }
+    }
+
+    public function deactivateElement(){
+
+        $res = \CIBlockElement::GetList(
+            [],
+            ["IBLOCK_ID" => 2, "ACTIVE" => 'Y', "CATALOG_AVAILABLE" => 'N'],
+            false,
+            false,
+            ['ID']
+        );
+        $ids = [];
+
+        while ($fields = $res->fetch()) {
+            $ids[$fields['ID']] = true;
+        }
+
+        if (!count($ids)) {
+            return false;
+        }
+        $res = Catalog\StoreProductTable::getList([
+            'filter' => ['>AMOUNT' => 1, "PRODUCT_ID" => array_keys($ids)],
+        ]);
+
+        while ($row = $res->fetch()) {
+            $ids[ $row["PRODUCT_ID"]] = false;
+        }
+
+        $el = new \CIBlockElement();
+
+        foreach( $ids as $id => $bool){
+            if($bool){
+                $el->Update($id, ['ACTIVE' => 'N']);
+            }
+        }
+        //pr($ids, 14);
+    }
+
+    public function activateElement(){
+//не использовать
+        $res = \CIBlockElement::GetList(
+            [],
+            ["IBLOCK_ID" => 2, "ACTIVE" => 'N', "CATALOG_AVAILABLE" => 'N'],
+            false,
+            false,
+            ['ID']
+        );
+        $ids = [];
+
+        while ($fields = $res->fetch()) {
+            $ids[$fields['ID']] = true;
+        }
+
+        if (!count($ids)) {
+            return false;
+        }
+        $res = Catalog\StoreProductTable::getList([
+            'filter' => ['>AMOUNT' => 1, "PRODUCT_ID" => array_keys($ids)],
+        ]);
+
+        while ($row = $res->fetch()) {
+            $ids[ $row["PRODUCT_ID"]] = false;
+        }
+
+        $el = new \CIBlockElement();
+
+        foreach( $ids as $id => $bool){
+            if($bool){
+                $el->Update($id, ['ACTIVE' => 'N']);
+            }
+        }
+        //pr($ids, 14);
     }
 
     private function clearOldRest($storeId, $updateStoreProductIds)
