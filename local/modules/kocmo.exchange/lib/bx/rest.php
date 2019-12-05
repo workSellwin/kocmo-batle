@@ -29,11 +29,9 @@ class Rest extends Helper
 
             $this->storeXmlId = $storeXmlId;
             $this->treeBuilder->setStoreRest($storeXmlId);
-//            $treeBuilder = new \Kocmo\Exchange\Tree\Rest($storeXmlId);
-//            parent::__construct($treeBuilder);
         } else {
             $this->storeXmlId = false;
-            //throw new \Exception("store not found!");
+            throw new \Exception("store not found!");
         }
     }
 
@@ -52,38 +50,45 @@ class Rest extends Helper
                 reset($this->stores);
                 $curXmlId = current($this->stores);
                 $this->utils->setModuleData($this->arParams['LAST_STORE_ID'], key($this->stores));
-            } else {
+            }
+            else {
+
+                $end = false;
 
                 foreach ($this->stores as $id => $xml) {
+
+                    $end = false;
 
                     if ($last) {
                         $this->utils->setModuleData($this->arParams['LAST_STORE_ID'], $id);
                         break;
                     }
 
-                    //$lastStoreId = $this->utils->getModuleData($this->arParams['LAST_STORE_ID']);
-
                     if ($id == $lastStoreId) {
                         $curXmlId = $xml;
                         $last = true;
+                        $end = true;
                     }
+                }
+
+                if($end){
+                    $this->resetCurStore();
                 }
             }
         }
+
         return $curXmlId;
     }
 
     public function update(): bool
     {
 
-        if ($this->storeXmlId === false) {
-
-            $this->resetCurStore();
-            $this->status = 'end';
-            $this->updateAvailable();
-            //$this->updateElementActivity();
-            return false;
-        }
+//        if ($this->storeXmlId === false) {
+//
+//            $this->status = 'end';
+//            $this->updateAvailable();
+//            return false;
+//        }
 
         $arReq = $this->treeBuilder->getRequestArr();//product xml_id => store xml_id => count
         $arUid = array_keys($arReq);
@@ -130,11 +135,19 @@ class Rest extends Helper
                         //
                     }
                 }
-                // $lastStoreId = $this->utils->getModuleData($this->arParams['LAST_STORE_ID']);
-                //$this->clearOldRest($lastStoreId, $updateStoreProductIds);//?
+                $this->clearOldRest($this->storeXmlId, $updateStoreProductIds);//?
             }
         }
-        $this->status = 'run';
+
+        $lastStoreId = $this->utils->getModuleData($this->arParams['LAST_STORE_ID']);
+
+        if( empty($lastStoreId) ){
+            $this->status = 'end';
+        }
+        else{
+            $this->status = 'run';
+        }
+
         return true;
     }
 
@@ -238,7 +251,9 @@ class Rest extends Helper
         }
         unset($row);
 
-        $iterator = \Bitrix\Catalog\ProductTable::getList([]);
+        $iterator = \Bitrix\Catalog\ProductTable::getList([
+            //'filter' => ["ID" => 22522]
+        ]);
         $productQuantity = [];
 
         while($row = $iterator->fetch()){
@@ -282,7 +297,7 @@ class Rest extends Helper
 
         $res = \CIBlockElement::GetList(
             [],
-            ["IBLOCK_ID" => 2, "ACTIVE" => 'N', "CATALOG_AVAILABLE" => 'N'],
+            ["IBLOCK_ID" => [2, 3], "ACTIVE" => 'N', "CATALOG_AVAILABLE" => 'N'],
             false,
             false,
             ['ID']

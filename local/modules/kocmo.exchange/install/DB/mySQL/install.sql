@@ -1,7 +1,7 @@
 create table if not exists kocmo_exchange_data
 (
 	ID   int         NOT NULL auto_increment,
-	UID  varchar(36) NOT NULL,
+	UID  varchar(38) NOT NULL,
 	JSON text        NOT NULL,
 	ENTRY varchar(36),
 	primary key (ID),

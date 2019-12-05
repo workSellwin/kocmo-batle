@@ -32,8 +32,6 @@ class Dbproduct extends Helper
 
         $this->startTimestamp = time();
         $arForDb = $this->treeBuilder->getProductsFromReq();
-        //echo '<pre>' . print_r($arForDb, true) . '</pre>';
-        //die();
         $last = true;
 
         if( is_array($arForDb) && count($arForDb) ) {
@@ -47,20 +45,20 @@ class Dbproduct extends Helper
                 }
 
                 try{
-//                    echo '<pre>' . print_r($item, true) . '</pre>';
-//                    die();
                     if( empty($item['PARENT']) || $item['PARENT'] == $item['UID']){
                         $item['ENTRY'] = 'product';
+                        $item['UID'] = 'p_' . $item['UID'];
                     }
                     else{
                         $item['ENTRY'] = 'offer';
                     }
-
+                    unset($item['PARENT']);
 
                     $result = Exchange\DataTable::add($item);
                     if($result->isSuccess()){
                         $this->utils->setModuleData($this->arParams['PRODUCT_LAST_UID'], $item["UID"]);
                     }
+                    //pr($result, 14);return true;
                 } catch ( DB\SqlQueryException $e ){
                     //например попытка добавить с не уникальным UID
                     $this->errors[] = $e->getMessage();

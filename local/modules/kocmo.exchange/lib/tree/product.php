@@ -76,8 +76,7 @@ class Product extends Builder
         $client = new \GuzzleHttp\Client();
         $response = $client->request('GET', $this->pointOfEntry . $getParamsStr);
         $arForDb = [];
-//        echo '<pre>' . print_r($this->pointOfEntry . $getParamsStr, true) . '</pre>';
-//        die('ff');
+
         if ($response->getStatusCode() == 200) {
 
             $arProducts = json_decode($response->getBody(), true);

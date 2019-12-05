@@ -19,7 +19,7 @@ class Product extends Helper
     protected $offerMatchXmlId = [];
     protected $arProperty = [];
     protected $arEnumMatch = [];
-    protected $defaultLimit = 1000;
+    protected $defaultLimit = 2000;
     protected $ENTRY = 'product';
 
     /**
@@ -280,10 +280,26 @@ class Product extends Helper
             $oElement = new \CIBlockElement();
         }
 
+        $isOffer = false;
+
         if( empty($arFields["PROPERTY_VALUES"]["CML2_LINK"]) ){
             $prod = $this->getProductFromIBlock($arFields["XML_ID"]);
         }
         else{
+            $isOffer = true;
+            $parentId = $arFields["PROPERTY_VALUES"]["CML2_LINK"];
+            $tempVal = array_search($parentId, $this->productMatchXmlId);
+
+            if( strpos($tempVal, 'p_' ) !== 0) {
+                $parentXmlId = 'p_' . $tempVal;
+
+                if (!isset($this->productMatchXmlId[$parentXmlId])) {
+
+                    $el = new \CIBlockElement;
+                    $el->Update($parentId, ["XML_ID" => $parentXmlId]);
+                    $this->productMatchXmlId[$parentXmlId] = $parentId;
+                }
+            }
             $prod = $this->getOfferFromIBlock($arFields["XML_ID"]);
         }
 
@@ -296,7 +312,7 @@ class Product extends Helper
             if (intval($id) > 0) {
 
                 if (intval($rowId) > 0) {
-                    $deleteResult = Exchange\DataTable::delete($rowId);
+                    //$deleteResult = Exchange\DataTable::delete($rowId);
                 }
 
                 Catalog\Model\Product::add(['fields' => ['ID' => $id]]);//add to b_catalog_product
@@ -304,17 +320,21 @@ class Product extends Helper
                 throw new \Exception("Error: " . $oElement->LAST_ERROR);
             }
 
-        } else {
+        }
+        else {
 
             if ($oElement->Update($prod, $arFields)) {
 
                 $id = $prod;
 
                 if (intval($rowId) > 0) {
-                    $deleteResult = Exchange\DataTable::delete($rowId);
+                    //$deleteResult = Exchange\DataTable::delete($rowId);
                 }
             }
         }
+        //pr($parentId, 14);
+        pr($id, 14);
+        //die('fff');
         return intval($id);
     }
 

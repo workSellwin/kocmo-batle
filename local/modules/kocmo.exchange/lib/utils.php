@@ -10,6 +10,7 @@ class Utils
     private $module = 'kocmo.exchange';
 
     public function setModuleData(string $name, string $data){
+        $data = substr($data, -36);
         Option::set($this->module, $name, $data);
     }
 
@@ -21,6 +22,10 @@ class Utils
     {
         if( empty($val) ){
             return false;
+        }
+
+        if(is_string($val) && strlen($val) === 38 && strpos($val, 'p_') === 0){
+            return true;
         }
 
         if (is_string($val) && strlen($val) === 36 && $val != '00000000-0000-0000-0000-000000000000') {

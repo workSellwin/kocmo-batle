@@ -70,7 +70,7 @@ class DataTable extends Main\Entity\DataManager
     public static function validateUid()
     {
         return array(
-            new Main\Entity\Validator\Length(null, 36),
+            new Main\Entity\Validator\Length(null, 38),
         );
     }
 }
