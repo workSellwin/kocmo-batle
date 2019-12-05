@@ -47,7 +47,7 @@ class Dbproduct extends Helper
                 try{
                     if( empty($item['PARENT']) || $item['PARENT'] == $item['UID']){
                         $item['ENTRY'] = 'product';
-                        $item['UID'] = 'p_' . $item['UID'];
+                        //$item['UID'] = 'p_' . $item['UID'];
                     }
                     else{
                         $item['ENTRY'] = 'offer';

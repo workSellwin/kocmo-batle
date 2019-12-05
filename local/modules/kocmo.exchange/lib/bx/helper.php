@@ -98,7 +98,6 @@ abstract class Helper
 
     protected function checkTime(){
 
-        return false;
         if(!isset($this->startTimestamp)){
             $this->startTimestamp = time();
             return false;
