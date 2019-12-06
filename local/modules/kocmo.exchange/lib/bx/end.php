@@ -45,7 +45,7 @@ class End
             $el = new \CIBlockElement();
 
             foreach ($elementsStatus as $id => $status) {
-
+//asdrubael@tut.by - dfgY_ey^667tf
 //                if (!isset($productPrices[$id])) {
 //                    if ($status != 'N') {
 //                        $el->Update($id, ['ACTIVE' => 'N']);
