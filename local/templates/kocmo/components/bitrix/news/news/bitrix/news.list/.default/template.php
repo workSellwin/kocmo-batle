@@ -12,7 +12,7 @@
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
 ?>
-<div class="main-content">
+
     <div class="two-columns-grid news">
 <?foreach($arResult["ITEMS"] as $arItem):?>
 	<?
@@ -49,4 +49,3 @@ $this->setFrameMode(true);
 <?if($arParams["DISPLAY_BOTTOM_PAGER"]):?>
 	<br /><?=$arResult["NAV_STRING"]?>
 <?endif;?>
-</div>

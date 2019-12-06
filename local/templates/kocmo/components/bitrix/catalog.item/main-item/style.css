@@ -2,3 +2,6 @@
     background: #D01C60;
     color: #fff;
 }
+.products-item__price, .products-item__old-price{
+    min-height: 28px;
+}

@@ -4,6 +4,9 @@
 namespace Kocmo\Exchange;
 
 use Bitrix\Main\Config\Option;
+use Bitrix\Main\Loader;
+use \Bitrix\Catalog\Model;
+use \Bitrix\Catalog;
 
 class Utils
 {
@@ -74,5 +77,67 @@ class Utils
         }
         $connection = \Bitrix\Main\Application::getConnection();
         return $connection->truncateTable($table);
+    }
+
+    public function getElementsStatus(array $filter){
+
+        Loader::includeModule('iblock');
+        $res = \CIBlockElement::GetList(
+            [],
+            $filter,
+            false,
+            false,
+            ['ID', 'ACTIVE']
+        );
+
+        $ids = [];
+
+        while ($fields = $res->fetch()) {
+            $ids[$fields['ID']] = $fields['ACTIVE'];
+        }
+        return $ids;
+    }
+
+    public function getProductsQuantity(){
+
+        Loader::includeModule('catalog');
+        $iterator = \Bitrix\Catalog\ProductTable::getList([]);
+        $productQuantity = [];
+
+        while($row = $iterator->fetch()){
+            $productQuantity[$row['ID']] = $row['QUANTITY'];
+        }
+
+        return $productQuantity;
+    }
+
+    public function getElementPrices(){
+
+        $iterator = Model\Price::getlist([]);
+        $productPrices = [];//все элементы имеющие цены
+
+        while ($row = $iterator->fetch()) {
+
+            if ($row['PRICE'] > 0) {
+                $productPrices[$row['PRODUCT_ID']] = true;
+            }
+        }
+
+        return $productPrices;
+    }
+
+    public function getAvailableElements($limit = 1){
+
+        $res = Catalog\StoreProductTable::getList([
+            'filter' => ['>AMOUNT' => $limit],
+        ]);
+
+        $ids = [];
+
+        while ($row = $res->fetch()) {
+            $ids[ $row["PRODUCT_ID"] ] = true;
+        }
+
+        return $ids;
     }
 }

@@ -28,7 +28,7 @@ if (IsModuleInstalled("iblock")) {
                     if ($pictureSrc)
                         $arResizePicture = CFile::ResizeImageGet(
                             $arSections["PICTURE"],
-                            array("width" => 240, 'height' => 700),
+                            array("width" => 800, 'height' => 317),
                             BX_RESIZE_IMAGE_PROPORTIONAL,
                             true
                         );

@@ -19,9 +19,9 @@ $arDeliveryParams = [
     '4' => [
         'additional' => $arResult['BLOCK_PROPS']['2'],
         'info' => [
-            'title' => 'Стоимость: 5 руб',
+            'title' => 'Стоимость: 10 руб',
             'class-subtitle' => 'basket-shipment__item-info-second-title',
-            'subtitle' => 'При заказе от 50 руб бесплатно',
+            'subtitle' => 'При заказе от 40 руб бесплатно',
         ],
     ],
     '2' => [
@@ -29,7 +29,7 @@ $arDeliveryParams = [
         'info' => [
             'title' => 'Бесплатно',
             'class-subtitle' => 'basket-shipment__item-info-second-title--free',
-            'subtitle' => 'При заказе от 50 руб бесплатно',
+            'subtitle' => 'При заказе от 40 руб бесплатно',
         ],
     ],
     '3' => [

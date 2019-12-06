@@ -57,3 +57,27 @@
 .basket-price__details{
     justify-content: center;
 }
+
+.logout{
+    font-size: 14px;
+    line-height: 135%;
+    color: #343434;
+}
+.header-basket-wrap {
+    position: relative;
+    padding-right: 10px;
+}
+
+.personality-state__item:last-of-type {
+    padding-right: 10px;
+    margin-right: 10px;
+}
+
+@media (max-width: 1240px) {
+    .products .products-item {
+        width: 33.3333%;
+    }
+}
+.profile-name{
+    color: #8C249F;
+}

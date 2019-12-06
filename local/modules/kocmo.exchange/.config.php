@@ -47,7 +47,7 @@ return [
         'GET_IMAGE_URI' => 'http://kocmo1c.sellwin.by/Kosmo_Sergey/hs/Kocmo/GetImage/',
         'REFERENCE_URL' => 'http://kocmo1c.sellwin.by/Kosmo_Sergey/hs/Kocmo/GetReference/',
         'TYPE_PRICE_ENTRY' => 'http://kocmo1c.sellwin.by/Kosmo_Sergey/hs/Kocmo/GetReference/42d10808-9ccb-11e8-a215-00505601048d',
-        'PRICE_ENTRY' => 'http://kocmo1c.sellwin.by/Kosmo_Sergey/hs/Kocmo/GetPrice',
+        'PRICE_ENTRY' => 'http://kocmo1c.sellwin.by/Kosmo/hs/Kocmo/GetPrice',
         'STORE_ENTRY' => 'http://kocmo1c.sellwin.by/Kosmo_Sergey/hs/Kocmo/GetReference/42d1082d-9ccb-11e8-a215-00505601048d',
         'REST_ENTRY' => 'http://kocmo1c.sellwin.by/Kosmo_Sergey/hs/Kocmo/GetStock',
         'PRODUCT_LAST_UID' => 'PRODUCT_LAST_UID',

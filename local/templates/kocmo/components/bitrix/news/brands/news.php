@@ -84,6 +84,8 @@ elseif ($cache->startDataCache())
 	}
 	$cache->endDataCache($filterData);
 }
+
+//echo '<pre>', print_r($arParams, true), '</pre>';
 ?>
 
 <?$APPLICATION->IncludeComponent(

@@ -18,7 +18,8 @@
         <!-- 290px x 226px -->
         <img src="<?= $arResult['file_img']['src'] ? $arResult['file_img']['src'] : KOCMO_TEMPLATE_PATH . '/images/temp/product.jpg' ?>"
              width="290" height="226" class="products-item__img"
-             alt="">
+             alt="<?= $arResult['ITEM']['IPROPERTY_VALUES']['ELEMENT_PREVIEW_PICTURE_FILE_ALT']?>"
+            title="<?= $arResult['ITEM']['IPROPERTY_VALUES']['ELEMENT_PREVIEW_PICTURE_FILE_TITLE']?>">
     </a>
     <div class="products-item__title-wrap">
         <a href="<?= $arResult['MARKA_BRAND']['DETAIL_PAGE_URL'] ?>" class="products-item__title"><?= $arResult['MARKA_BRAND']['NAME'] ?></a>

@@ -26,7 +26,9 @@ $AVERAGE_RATING = $PROP['AVERAGE_RATING'];
                                         <a href="<?= $photo['src'] ?>"
                                            rel="gallery1" class="fancybox">
                                             <!-- 545x361 -->
-                                            <img src="<?= $photo['src'] ?>" alt="">
+                                            <img src="<?= $photo['src'] ?>"
+                                                 alt="<?= $arResult['DETAIL_PICTURE']['ALT'];?>"
+                                                title="<?= $arResult['DETAIL_PICTURE']['TITLE'];?>">
                                         </a>
                                     </div>
                                 <? endforeach; ?>
@@ -231,6 +233,9 @@ $AVERAGE_RATING = $PROP['AVERAGE_RATING'];
 
 
                     <div class="product__buy">
+
+                        <?if($arResult['elemPrice']['PRICE_NEW']):?>
+
                         <div class="product__counter counter" <?= $arResult['CATALOG_QUANTITY'] > 0 && !$arResult['OFFERS'] && $arResult['dataOffers'][$arResult['ID']]['ADD_BASKET'] != 'Y' ? 'style="display: flex"' : 'style="display: none"' ?>>
                             <? /*js_counter__button*/ ?>
                             <span class="counter__button counter__button--down  main_js_counter__button"
@@ -266,6 +271,14 @@ $AVERAGE_RATING = $PROP['AVERAGE_RATING'];
                                     <span>ОСТАВИТЬ ПРЕДЗАКАЗ</span>
                                 </span>
                         </a>
+
+                        <?else:?>
+
+                            <span  class="btn  products-item__add">
+                                товар отсутствует
+                            </span>
+                        <?endif;?>
+
                     </div>
 
                 </div>

@@ -11,7 +11,7 @@ $(document).ready(function () {
         if(DATA_OFFERS[this_id]['ADD_BASKET'] == 'N') {
 
             $.post(
-                "/ajax/index.php",
+                "/ajax/",
                 {
                     ACTION: "addbasket",
                     METHOD: "Add",

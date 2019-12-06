@@ -169,6 +169,9 @@ $containerName = 'container-' . $navParams['NavNum']; ?>
     }
 </style>
 
+<?
+if(count($arResult['ITEM_ROWS']) > 0):?>
+
 <div class="suggestions">
     <div class="container">
         <h2 class="suggestions__title">Предложения <span>только для ВАС</span></h2>
@@ -241,6 +244,7 @@ $containerName = 'container-' . $navParams['NavNum']; ?>
                     </svg>
                 </div>
             </div>
+
             <div class="button-more-wrap">
                 <!-- MainJs.suggestionMore -->
                 <div class="suggestions__btn  js_my_btn_suggestions">
@@ -250,6 +254,7 @@ $containerName = 'container-' . $navParams['NavNum']; ?>
                     </svg>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -281,3 +286,5 @@ $containerName = 'container-' . $navParams['NavNum']; ?>
             }
         })
     </script>
+
+<?endif;?>

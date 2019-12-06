@@ -74,15 +74,14 @@ $PROP = array_column($arResult['PROPERTIES'], 'VALUE', 'CODE');
     ); ?>
 
 
-    <div class="category-filter-active-fields-wrap">
-        <div class="container js_category-filter-active-fields"></div>
-    </div>
+
 
     <div id="AJAX_FILTER_CONTAINER">
         <?
         if (isset($_REQUEST['ajax_filter']) && $_REQUEST['ajax_filter'] == 'Y') {
             $GLOBALS['APPLICATION']->RestartBuffer();
         }
+
 
 
         if ($PROP['PROD']) {
@@ -102,6 +101,17 @@ $PROP = array_column($arResult['PROPERTIES'], 'VALUE', 'CODE');
 
         }
 
+        if(isset($_REQUEST['available_not']) && $_REQUEST['available_not'] == 'y'){
+            $filter_sales_prod['CATALOG_AVAILABLE'] = 'N';
+        }
+
+        if(isset($_REQUEST['available_yes']) && $_REQUEST['available_yes'] == 'y'){
+            $filter_sales_prod['CATALOG_AVAILABLE'] = 'Y';
+        }
+
+        if((isset($_REQUEST['available_not']) && $_REQUEST['available_not'] == 'y') && (isset($_REQUEST['available_yes']) && $_REQUEST['available_yes'] == 'y')){
+            unset($filter_sales_prod['CATALOG_AVAILABLE']);
+        }
 
         $APPLICATION->IncludeComponent(
             "bitrix:catalog.section",

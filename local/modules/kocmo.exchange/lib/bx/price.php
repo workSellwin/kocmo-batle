@@ -23,19 +23,24 @@ class Price extends Helper
         $arReq = $this->treeBuilder->getRequestArr();
 
         $typePrice = \Bitrix\Catalog\GroupTable::getlist([
-            //'filter' => ['SORT' => 123],
             'select' => ['ID', 'XML_ID']
         ])->fetchAll();
 
         $typePrice = array_column($typePrice, NULL, "XML_ID");
 
-        $res = \CIBlockElement::GetList([], ["XML_ID" => array_keys($arReq)], false, false, ['ID', 'XML_ID']);
+        $res = \CIBlockElement::GetList(
+            [],
+            ["XML_ID" => array_keys($arReq)],
+            false,
+            false,
+            ['ID', 'XML_ID']
+        );
         $elementsId = [];
 
         while($fields = $res->fetch()){
             $elementsId[$fields['ID']] = $fields['XML_ID'];
         }
-
+        //pr($elementsId,14);return false;
         $dbPrices = Model\Price::getlist([
             "filter" => ["PRODUCT_ID" => array_keys($elementsId), "CURRENCY" => $this->currency],
             "select" => ["ID", "PRODUCT_ID", "CATALOG_GROUP_ID"],

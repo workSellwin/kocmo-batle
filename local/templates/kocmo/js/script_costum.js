@@ -51,7 +51,7 @@ function productsItemAdd(PRODUCT_ID) {
     } else {
         if (item['IS_BASKET'] == 'N') {
             $.post(
-                "/ajax/index.php",
+                "/ajax/",
                 {
                     ACTION: "addbasket",
                     METHOD: "Add",
@@ -90,7 +90,7 @@ function productsItemDel(PRODUCT_ID, ID) {
 
     }
     $.post(
-        "/ajax/index.php",
+        "/ajax/",
         {
             ACTION: "delbasket",
             METHOD: "Del",
@@ -132,7 +132,7 @@ function BigBasketItemDel(PRODUCT_ID, ID) {
     }
 
     $.post(
-        "/ajax/index.php",
+        "/ajax/",
         {
             ACTION: "basket",
             METHOD: "Del",
@@ -173,7 +173,7 @@ function BigBasketItemDel(PRODUCT_ID, ID) {
 function UpdateProductBasket(PRODUCT_ID, QUANTITY) {
     setTimeout(function () {
         $.post(
-            "/ajax/index.php",
+            "/ajax/",
             {
                 ACTION: "updatebasket",
                 METHOD: "Update",
@@ -255,7 +255,7 @@ function ReloadAjax() {
 //проверяет есть ли элементы в карзине
 function EmptyBasket() {
     $.post(
-        "/ajax/index.php",
+        "/ajax/",
         {
             ACTION: "basket",
             METHOD: "EmptyBasket",

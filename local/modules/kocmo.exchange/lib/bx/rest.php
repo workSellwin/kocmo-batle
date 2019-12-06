@@ -206,24 +206,43 @@ class Rest extends Helper
     public function updateAvailable()
     {
 
-        $res = \CIBlockElement::GetList(
-            [],
-            ["IBLOCK_ID" => [2, 3]],
-            false,
-            false,
-            ['ID', 'ACTIVE']
-        );
+        //$ids = $this->utils->getElementsStatus(["IBLOCK_ID" => [2, 3]]);
+        $productAmount = $this->getProductAmount();
+        $productQuantity = $this->utils->getProductsQuantity();
 
-        $ids = [];
+        $obProduct = new \CCatalogProduct();
+        //$el = new \CIBlockElement();
 
-        while ($fields = $res->fetch()) {
-            $ids[$fields['ID']] = $fields['ACTIVE'];
+        foreach ($productAmount as $id => $quantity) {
+
+            if ($quantity < 2) {
+                $quantity = 0;
+            }
+
+            if($quantity != $productQuantity[$id]){
+                $productQuantity[$id] = $quantity;
+                $obProduct->Update($id, ['QUANTITY' => $quantity]);
+            }
         }
+
+//        unset($productAmount, $id, $quantity);
+//
+//        foreach($productQuantity as $id => $quantity){
+//
+//            if($quantity != 0 && $ids[$id] != 'Y'){
+//                $el->Update($id, ['ACTIVE' => 'Y']);
+//            }
+//            elseif($quantity == 0 && $ids[$id] != 'N'){
+//                $el->Update($id, ['ACTIVE' => 'N']);
+//            }
+//        }
+    }
+
+    public function getProductAmount(){
 
         $res = Catalog\StoreProductTable::getList([
             'filter' => [
                 'STORE_ID' => [17, 32],
-                //'>AMOUNT' => 1,
             ]
         ]);
 
@@ -249,43 +268,7 @@ class Rest extends Helper
                 }
             }
         }
-        unset($row);
-
-        $iterator = \Bitrix\Catalog\ProductTable::getList([
-            //'filter' => ["ID" => 22522]
-        ]);
-        $productQuantity = [];
-
-        while($row = $iterator->fetch()){
-            $productQuantity[$row['ID']] = $row['QUANTITY'];
-        }
-
-        $obProduct = new \CCatalogProduct();
-        $el = new \CIBlockElement();
-
-        foreach ($productAmount as $id => $quantity) {
-
-            if ($quantity < 2) {
-                $quantity = 0;
-            }
-
-            if($quantity != $productQuantity[$id]){
-                $productQuantity[$id] = $quantity;
-                $obProduct->Update($id, ['QUANTITY' => $quantity]);
-            }
-        }
-
-        unset($productAmount, $id, $quantity, $row);
-
-        foreach($productQuantity as $id => $quantity){
-
-            if($quantity != 0 && $ids[$id] != 'Y'){
-                $el->Update($id, ['ACTIVE' => 'Y']);
-            }
-            elseif($quantity == 0 && $ids[$id] != 'N'){
-                $el->Update($id, ['ACTIVE' => 'N']);
-            }
-        }
+        return $productAmount;
     }
 
     public function resetCurStore()

@@ -30,7 +30,7 @@
                                placeholder="Введите ваш email">
                     </div>
                 </div>
-
+                <?$arResult['AR_USER']['PERSONAL_PHONE'] = '+' . $arResult['AR_USER']['PERSONAL_PHONE'] ?>
                 <div class="cabinet-profile__fields-half">
                     <div class="form-field">
                         <input name="user-phone" value="<?= $arResult['AR_USER']['PERSONAL_PHONE'] ?>"

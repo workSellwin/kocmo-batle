@@ -47,7 +47,7 @@ $(document).ready(function () {
 
     function UpdateBasketCountItem(id, count) {
         $.post(
-            "/ajax/index.php",
+            "/ajax/",
             {
                 ACTION: "updatebasket",
                 METHOD: "Update",

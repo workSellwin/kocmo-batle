@@ -1728,7 +1728,7 @@ var DiscountCard = {
 
                 success: function success(response) {
                     $(_this.discountCardWrap).html(response);
-                    $('.form-field__input[name="card-number"]').inputmask("******");
+                    //$('.form-field__input[name="card-number"]').inputmask("******");
                     $preloader.removeClass('preloader--active');
                 },
 

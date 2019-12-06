@@ -15,6 +15,7 @@ $obAsset = Asset::getInstance();
 $obPage = new PropertyPage();
 define('KOCMO_TEMPLATE_PATH', SITE_TEMPLATE_PATH . '/imposition/build/assets');
 ?>
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -24,7 +25,17 @@ define('KOCMO_TEMPLATE_PATH', SITE_TEMPLATE_PATH . '/imposition/build/assets');
     <meta name="format-detection" content="telephone=no">
     <meta name="format-detection" content="address=no">
     <title><? $APPLICATION->ShowTitle() ?></title>
+<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	
+	  ga('create', 'UA-117911007-1', 'auto');
+	  ga('require', 'displayfeatures');
+	  ga('send', 'pageview');
 
+	</script>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -32,6 +43,7 @@ define('KOCMO_TEMPLATE_PATH', SITE_TEMPLATE_PATH . '/imposition/build/assets');
     <link rel="manifest" href="/manifest.json">
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="theme-color" content="#ffffff">
+
 
     <?
     // CSS
@@ -47,19 +59,6 @@ define('KOCMO_TEMPLATE_PATH', SITE_TEMPLATE_PATH . '/imposition/build/assets');
     $obAsset->addJs(SITE_TEMPLATE_PATH . "/js/retailrocket.js");
     ?>
     <? $APPLICATION->ShowHead(); ?>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117911007-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-
-        gtag('js', new Date());
-
-        gtag('config', 'UA-117911007-1');
-    </script>
 
 </head>
 
@@ -157,16 +156,16 @@ define('KOCMO_TEMPLATE_PATH', SITE_TEMPLATE_PATH . '/imposition/build/assets');
                         <? AjaxContent::Finish('header_basket') ?>
                     <? } ?>
                     <? if ($USER->IsAuthorized()) { ?>
-                        <a href="/user/profile/" class="personality-state__item personality-state__item--registered">
-                            <svg width="25" height="25">
-                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#svg-cabinet"></use>
-                            </svg>
-                            <div>
-                                <? $arUserGet = explode(' ', $USER->GetFullName()); ?>
-                                <div><?= $arUserGet[0] ?></div>
-                                <div><?= $arUserGet[1] ?></div>
-                            </div>
-                        </a>
+                            <span  class="personality-state__item personality-state__item--registered">
+                                <svg width="25" height="25">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#svg-cabinet"></use>
+                                </svg>
+                                <div>
+                                    <? $arUserGet = explode(' ', $USER->GetFullName()); ?>
+                                    <div><a class="profile-name" href="/user/profile/"> <?= $arUserGet[0] ?> <?= $arUserGet[1] ?></a></div>
+                                    <div> <a class="logout" href="/?logout=yes">Выйти</a></div>
+                                </div>
+                            </span>
                     <? } else { ?>
                         <a href="/auth/" class="personality-state__item">
                             <svg width="25" height="25">
@@ -226,10 +225,10 @@ define('KOCMO_TEMPLATE_PATH', SITE_TEMPLATE_PATH . '/imposition/build/assets');
     <div class="mobile-nav-footer">
         <? Component::NewsList(['template' => 'header_mob_soc', 'PARENT_SECTION' => '23']) ?>
         <div class="mobile-nav__contacts">
-            <a href="tel:+375296665544" class="mobile-nav__phone">666-55-44</a>
+            <a href="tel:+375296665544" class="mobile-nav__phone">626-14-14</a>
             <div>
                 <div class="mobile-nav__contacts-title">Горячая линия</div>
-                <div class="mobile-nav__contacts-schedule">ежедневно с 8:00 до 22:00</div>
+                <div class="mobile-nav__contacts-schedule">ежедневно с 9:00 до 21:00</div>
             </div>
         </div>
         <div class="mobile-nav__loc-wrap">
@@ -289,4 +288,5 @@ define('KOCMO_TEMPLATE_PATH', SITE_TEMPLATE_PATH . '/imposition/build/assets');
             </div>
         </div>
         <div class="container">
-            <? endif; ?>
+
+<? endif; ?>

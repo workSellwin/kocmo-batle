@@ -1,0 +1,39 @@
+<?
+$aMenuLinks = Array(
+    Array(
+        "Новости КОСМО",
+        "/about/news/",
+        Array(),
+        Array(),
+        ""
+    ),
+    Array(
+        "Партнерам",
+        "/about/partners/",
+        Array(),
+        Array(),
+        ""
+    ),
+    Array(
+        "Контакты",
+        "/about/contacts/",
+        Array(),
+        Array(),
+        ""
+    ),
+    Array(
+        "Магазины КОСМО",
+        "/about/stores/",
+        Array(),
+        Array(),
+        ""
+    ),
+    Array(
+        "Вакансии",
+        "/about/vacancies/",
+        Array(),
+        Array(),
+        ""
+    ),
+);
+?>

@@ -16,9 +16,12 @@ if ($arParams["SET_TITLE"] == "Y") {
 <? if (!empty($arResult["ORDER"])): ?>
     <?
     $order = $arResult['ORDER'];
-    $ob = new \Lui\Kocmo\Request\Order($order['ID']);
-    $data = $ob->Run();
-    $uid = $data['UID'];
+    $uid = $order['XML_ID'];
+    /*
+           $ob = new \Lui\Kocmo\Request\Order($order['ID']);
+           $data = $ob->Run();
+        $uid = $data['UID'];
+    */
     ?>
     <div class="order-confirmation-wrap">
         <div class="order-confirmation">
@@ -31,8 +34,10 @@ if ($arParams["SET_TITLE"] == "Y") {
                     </div>
                     <div class="order-confirmation__letter-transaction">Номер
                         заказа: <?= $order['ACCOUNT_NUMBER'] ?></div>
-                    <div class="order-confirmation__letter-transaction">UID
-                        заказа: <?= $uid ?></div>
+                    <? if ($uid) { ?>
+                        <div class="order-confirmation__letter-transaction">UID
+                            заказа: <?= $uid ?></div>
+                    <? } ?>
                 </div>
 
                 <div class="order-confirmation__letter-details">
@@ -43,7 +48,7 @@ if ($arParams["SET_TITLE"] == "Y") {
                         Дата доставки: 22.04.19
                     </div>
                     <div class="order-confirmation__letter-details-item">
-                        Оплата: <?= Order::GePaymentName($order['PAYMENT_ID']) ?>
+                        Оплата: <?= Order::GePaymentName($order['PAY_SYSTEM_ID']) ?>
                     </div>
                     <div class="order-confirmation__letter-details-item">
                         Сумма заказа: <?= $order['PRICE'] ?> руб.
@@ -131,3 +136,13 @@ if ($arParams["SET_TITLE"] == "Y") {
     </table>
 
 <? endif ?>
+
+<?
+global $USER;
+$ANONYMOUS_USER = 3;
+if($USER->GetID() == $ANONYMOUS_USER){
+    $USER->Logout();
+}
+
+
+?>

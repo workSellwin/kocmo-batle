@@ -579,8 +579,15 @@ while ($ar_fields = $res->GetNextElement()) {
     if ($arFields['PROPERTY_MORE_PHOTO_VALUE']) {
         $arResult['RES']['PHOTO_BIG'][] = CFile::ResizeImageGet($arFields['PROPERTY_MORE_PHOTO_VALUE'], array('width' => 545, 'height' => 360), BX_RESIZE_IMAGE_PROPORTIONAL, true);
         $arResult['RES']['PHOTO_SMAL'][] = CFile::ResizeImageGet($arFields['PROPERTY_MORE_PHOTO_VALUE'], array('width' => 82, 'height' => 54), BX_RESIZE_IMAGE_PROPORTIONAL, true);
+    }else{
+        if(!$arResult['DETAIL_PICTURE']['ID']) {
+            $arResult['RES']['PHOTO_BIG'][] = ['src' => NO_IMG_PATH];
+            $arResult['RES']['PHOTO_SMAL'][] = ['src' => NO_IMG_PATH];
+        }
     }
 }
+
+
 
 $arResult['RES']['PANET_TEXT'] = [
     'product-description' => [
@@ -589,14 +596,14 @@ $arResult['RES']['PANET_TEXT'] = [
         'TEXT' => $arResult['DETAIL_TEXT'],
     ],
     'product-using-method' => [
-        'ACTIVE' => $arResult['PROPERTIES']['METHOD_APPLICATION']['VALUE']['TEXT'] ? 'Y' : 'N',
+        'ACTIVE' => $arResult['PROPERTIES']['SPOSOB_PRIMENENIYA']['VALUE'] ? 'Y' : 'N',
         'NAME' => 'способ применения',
-        'TEXT' => htmlspecialchars_decode($arResult['PROPERTIES']['METHOD_APPLICATION']['VALUE']['TEXT'], ENT_HTML5),
+        'TEXT' => htmlspecialchars_decode($arResult['PROPERTIES']['SPOSOB_PRIMENENIYA']['VALUE'], ENT_HTML5),
     ],
     'product-composition' => [
-        'ACTIVE' => $arResult['PROPERTIES']['COMPOSITION']['VALUE']['TEXT'] ? 'Y' : 'N',
+        'ACTIVE' => $arResult['PROPERTIES']['SOSTAV']['VALUE'] ? 'Y' : 'N',
         'NAME' => 'состав',
-        'TEXT' => htmlspecialchars_decode($arResult['PROPERTIES']['COMPOSITION']['VALUE']['TEXT'], ENT_HTML5),
+        'TEXT' => htmlspecialchars_decode($arResult['PROPERTIES']['SOSTAV']['VALUE'], ENT_HTML5),
     ],
 ];
 
@@ -693,7 +700,8 @@ if ($arResult['PROPERTIES']['MARKA']['VALUE']) {
     $res = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
     while ($ob = $res->GetNext()) {
         $arResult['MARKA_BRAND'] = $ob;
-        $arResult['MARKA_BRAND']['PREVIEW_PICTURE'] = CFile::GetPath($ob["PREVIEW_PICTURE"]);
+        $file = CFile::ResizeImageGet($ob["PREVIEW_PICTURE"], array('width'=>238, 'height'=>62), BX_RESIZE_IMAGE_PROPORTIONAL, true);
+        $arResult['MARKA_BRAND']['PREVIEW_PICTURE'] = $file['src'];
     }
 }
 

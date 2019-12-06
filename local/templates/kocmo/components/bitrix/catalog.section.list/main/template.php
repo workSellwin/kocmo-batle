@@ -58,7 +58,7 @@ $arSectionDeleteParams = array("CONFIRM" => GetMessage('CT_BCSL_ELEMENT_DELETE_C
                 <? endif; ?>
                 <? foreach ($arResult['SECTIONS'] as &$arSection): ?>
                     <li class="category-subcategory__item">
-                        <a href="<?= $arSection['SECTION_PAGE_URL'] ?>"
+                        <a href="<?= $arSection['SECTION_PAGE_URL'] ?>?available_yes=y"
                            class="category-subcategory__lnk"><span><?= $arSection['NAME'] ?></span></a>
                     </li>
                 <? endforeach; ?>

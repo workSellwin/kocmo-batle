@@ -43,7 +43,7 @@ $this->setFrameMode(true); ?>
         'CACHE_TYPE' => "N",//$arParams['CACHE_TYPE'],
         'CACHE_TIME' => $arParams['CACHE_TIME'],
         'CACHE_GROUPS' => $arParams['CACHE_GROUPS'],
-        'SET_TITLE' => $arParams['SET_TITLE'],
+        'SET_TITLE' => 'N',//$arParams['SET_TITLE'],
         'SET_LAST_MODIFIED' => $arParams['SET_LAST_MODIFIED'],
         'MESSAGE_404' => $arParams['~MESSAGE_404'],
         'SET_STATUS_404' => $arParams['SET_STATUS_404'],
