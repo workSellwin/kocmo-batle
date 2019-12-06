@@ -39,7 +39,7 @@ class End
 
             $elementsStatus = $this->utils->getElementsStatus(["IBLOCK_ID" => [2, 3]]);//все элементы с их статусами
             $productPrices = $this->utils->getElementPrices();//все элементы имеющие цены
-            $productAvailable = [];
+            $productAvailable = $this->utils->getAvailableElements();
             //$productQuantity = $this->utils->getProductsQuantity();//все товары с количеством
 
             $el = new \CIBlockElement();
