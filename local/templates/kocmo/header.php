@@ -5,6 +5,24 @@ use Bitrix\Main\Page\Asset;
 use Lui\Kocmo\IncludeComponent as Component;
 use Lui\Kocmo\PropertyPage;
 
+$redirects = include $_SERVER['DOCUMENT_ROOT'] . '/include/redirects.php';
+
+$url = $_SERVER['REQUEST_URI'];
+$pos = strpos($_SERVER['REQUEST_URI'], '?');
+
+if( $pos === false){
+    $url = $_SERVER['REQUEST_URI'];
+}
+else{
+    $url = substr($_SERVER['REQUEST_URI'], 0, $pos);
+}
+
+if($redirects[ $url ]){
+   //pr( $_SERVER['SERVER_NAME'] . $redirects[$url], 14);
+    header('Location: ' . 'http://' . $_SERVER['SERVER_NAME'] . $redirects[$url] );
+    exit;
+}
+
 global $OBJ_ITEMS;
 CJSCore::Init(array("date"));
 CAjax::Init();

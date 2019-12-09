@@ -19,7 +19,7 @@ class Product extends Helper
     protected $offerMatchXmlId = [];
     protected $arProperty = [];
     protected $arEnumMatch = [];
-    protected $defaultLimit = 2000;
+    protected $defaultLimit = 1000;
     protected $ENTRY = 'product';
 
     /**
