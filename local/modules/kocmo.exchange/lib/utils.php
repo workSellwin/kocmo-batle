@@ -3,10 +3,10 @@
 
 namespace Kocmo\Exchange;
 
-use Bitrix\Main\Config\Option;
-use Bitrix\Main\Loader;
-use \Bitrix\Catalog\Model;
-use \Bitrix\Catalog;
+use Bitrix\Main\Config\Option,
+    Bitrix\Main\Loader,
+    \Bitrix\Catalog\Model,
+    \Bitrix\Catalog;
 
 class Utils
 {
@@ -79,9 +79,10 @@ class Utils
         return $connection->truncateTable($table);
     }
 
-    public function getElementsStatus(array $filter){
+    public function getElementsStatus (array $filter) {
 
         Loader::includeModule('iblock');
+
         $res = \CIBlockElement::GetList(
             [],
             $filter,
@@ -98,20 +99,26 @@ class Utils
         return $ids;
     }
 
-    public function getProductsQuantity(){
+    public function getProductsQuantity($limit = 1){
 
         Loader::includeModule('catalog');
-        $iterator = \Bitrix\Catalog\ProductTable::getList([]);
+
+//        $iterator = \Bitrix\Catalog\ProductTable::getList([
+//            "filter" => [">AMOUNT" => $limit]
+//        ]);
+        $iterator = \Bitrix\Catalog\StoreProductTable::getlist([
+            "filter" => [">AMOUNT" => $limit]
+        ]);
         $productQuantity = [];
 
         while($row = $iterator->fetch()){
-            $productQuantity[$row['ID']] = $row['QUANTITY'];
+                $productQuantity[$row['PRODUCT_ID']] = true;
         }
 
         return $productQuantity;
     }
 
-    public function getElementPrices(){
+    public function getElementPrices () {
 
         $iterator = Model\Price::getlist([]);
         $productPrices = [];//все элементы имеющие цены
@@ -126,18 +133,41 @@ class Utils
         return $productPrices;
     }
 
-    public function getAvailableElements($limit = 1){
+    public function getBindOffers(){
 
-        $res = Catalog\StoreProductTable::getList([
-            'filter' => ['>AMOUNT' => $limit],
+        Loader::includeModule('catalog');
+
+        $iterator = Catalog\ProductTable::getList([
+            "filter" => [
+                "TYPE" => 4
+            ]
         ]);
 
-        $ids = [];
+        $offersId = [];
 
-        while ($row = $res->fetch()) {
-            $ids[ $row["PRODUCT_ID"] ] = true;
+        while( $fields = $iterator->fetch() ){
+            $offersId[] = $fields['ID'];
         }
 
-        return $ids;
+        return $offersId;
+    }
+
+    public function getBindProductsFromOffers($offersId){
+
+        $res = \CIblockElement::GetList(
+            [],
+            ['IBLOCK_ID' => 3, 'ID' => $offersId, 'ACTIVE' => 'Y'],
+            false,
+            false,
+            ['ID' , 'PROPERTY_CML2_LINK']
+        );
+
+        $productIds = [];
+
+        while( $fields = $res->fetch() ){
+            $productIds[] = $fields['PROPERTY_CML2_LINK_VALUE'];
+        }
+
+        return $productIds;
     }
 }

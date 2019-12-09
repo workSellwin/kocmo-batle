@@ -18,7 +18,7 @@ class Basket extends Base
 
     public function __construct()
     {
-        $url = 'http://kocmo1c.sellwin.by/Kosmo/hs/Kocmo/GetBasket';
+        $url = \Lui\Kocmo\Request\Config\Url::GetBasket();
         $arParams = ['json' => ''];
         parent::__construct($url, $arParams);
         $this->SetBasket();

@@ -11,7 +11,7 @@ class Actions extends BaseGet
      */
     public function __construct(string $shop = '')
     {
-        parent::__construct('http://kocmo1c.sellwin.by/Kosmo_Sergey/hs/Kocmo/GetActions');
+        parent::__construct(\Lui\Kocmo\Request\Config\Url::GetActions());
         $this->SetQuery(['shop' => $shop]);
     }
 

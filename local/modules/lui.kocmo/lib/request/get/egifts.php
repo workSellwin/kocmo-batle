@@ -4,20 +4,22 @@
 namespace Lui\Kocmo\Request\Get;
 
 
-class Certificate extends BaseGet
+class EGifts extends BaseGet
 {
+
     /**
      * Certificate constructor.
      * @param string $id
      */
-    public function __construct(string $id = '')
+    public function __construct(string $json = '')
     {
-        parent::__construct(\Lui\Kocmo\Request\Config\Url::GetCertificate());
-        $this->SetQuery(['id' => $id]);
+        parent::__construct(\Lui\Kocmo\Request\Config\Url::GetNumberEGifts());
+        $this->SetQuery(['json' => $json]);
     }
 
     public function SetQuery(array $arQuery)
     {
         $this->arQuery = $arQuery;
     }
+
 }

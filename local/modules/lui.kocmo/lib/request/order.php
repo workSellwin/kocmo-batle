@@ -16,7 +16,8 @@ class Order extends Base
     public function __construct(int $id)
     {
         $this->id = $id;
-        $url = 'http://kocmo1c.sellwin.by/Kosmo/hs/Kocmo/SetOrder';
+        $url = \Lui\Kocmo\Request\Config\Url::SetOrder();
+        AddMessage2Log($url);
         $arParams = ['json' => ''];
         parent::__construct($url, $arParams);
     }

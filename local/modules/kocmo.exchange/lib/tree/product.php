@@ -117,8 +117,7 @@ class Product extends Builder
                         $prepareItem[ $g_uid ] = $v;
                     }
                 }
-//        echo '<pre>' . print_r($prepareItem, true) . '</pre>';
-//        die('ff');
+
                 $arForDb[$prepareItem['UID']]['JSON'] = json_encode($prepareItem);
                 $arForDb[$prepareItem['UID']]["IMG_GUI"] = $prepareItem[$this->arParams['PIC_FILE']];
                 $arForDb[$prepareItem['UID']]['PARENT'] = $prepareItem['PARENT'];

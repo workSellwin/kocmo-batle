@@ -242,7 +242,7 @@ class IncludeComponent
             "PRICE_VAT_SHOW_VALUE" => "N",
             "PRODUCT_BLOCKS_ORDER" => "props,sku,columns",
             "QUANTITY_FLOAT" => "Y",
-            "SET_TITLE" => "Y",
+            "SET_TITLE" => "N",
             "SHOW_DISCOUNT_PERCENT" => "Y",
             "SHOW_FILTER" => "N",
             "SHOW_RESTORE" => "N",

@@ -4,6 +4,7 @@
 namespace Lui\Kocmo\Helper;
 
 
+use Lui\Kocmo\Helper\EmailBasket;
 use Lui\Kocmo\Request\Basket;
 
 class Order
@@ -43,7 +44,6 @@ class Order
         $order = \Bitrix\Sale\Order::load($id);
         if (is_object($order)) {
             $basket = $order->getBasket();
-
             $propertyCollection = $order->getPropertyCollection();
             $ar = $propertyCollection->getArray();
             $arOrderProp = [];
@@ -55,9 +55,7 @@ class Order
                 ];
             }
 
-
             $deliveryIds = $order->getDeliverySystemId(); // массив id способов доставки
-
             $arDelivery = \Bitrix\Sale\Delivery\Services\Manager::getById(reset($deliveryIds));
 
             if ($arDelivery) {
@@ -169,7 +167,7 @@ class Order
                     $arJson['goods'][] = $goods;
                 } else {
                     $arJson['goods'][] = [
-                        'UID' => $arProperty['PRODUCT.XML_ID'],
+                        'UID' => $arProperty['PRODUCT.XML_ID'] ?? $item->getField('PRODUCT_XML_ID'),
                         'COUNT' => $item->getQuantity(),
                         'PRICE' => round($item->getPrice(), 2),
                         'SUMM' => round($item->getFinalPrice(), 2),
@@ -182,4 +180,47 @@ class Order
         $sJson = json_encode($arJson);
         return $sJson;
     }
+
+    public static function GetProperty(\Bitrix\Sale\Order $order, $array = false)
+    {
+        $propertyCollection = $order->getPropertyCollection();
+        $ar = $propertyCollection->getArray();
+        $arProp = array_column($ar['properties'], 'VALUE', 'CODE');
+        if (!$array) {
+            foreach ($arProp as $code => &$prop) {
+                $prop = $prop[0];
+            }
+
+        }
+        return $arProp;
+    }
+
+
+    public static function GetPayNameOrder(\Bitrix\Sale\Order $order)
+    {
+        $PAY_SYSTEM_ID = $order->GetField('PAY_SYSTEM_ID');
+        return self::GePaymentName($PAY_SYSTEM_ID);
+    }
+
+    public static function GetDeliveryNameOrder(\Bitrix\Sale\Order $order)
+    {
+        $DELIVERY_ID = $order->GetField('DELIVERY_ID');
+        return self::GetDeliveryName($DELIVERY_ID);
+    }
+
+    public static function GetOrderListEmail(\Bitrix\Sale\Order $order)
+    {
+        $basket = $order->getBasket();
+        return EmailBasket::GetHtml($basket);
+    }
 }
+
+/*
+ *
+ *
+
+
+
+
+ *
+ */

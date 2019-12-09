@@ -72,4 +72,6 @@ abstract class Base implements IblockInterface
      */
     abstract function GetData(array $arFilter): array;
 
+
+
 }

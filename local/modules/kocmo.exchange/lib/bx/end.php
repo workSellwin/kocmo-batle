@@ -15,14 +15,17 @@ class End
     protected $errors = [];
     protected $productsStatus = [];
 
+    function __construct()
+    {
+        $this->utils = new Exchange\Utils();
+    }
+
     public function update(): bool
     {
 
         //$connection = \Bitrix\Main\Application::getConnection();
         //$connection->truncateTable('kocmo_exchange_data');
         //$connection->truncateTable('kocmo_exchange_product_image');
-
-        $this->utils = new Exchange\Utils();
 
         //$this->utils->setModuleData('PRODUCT_LAST_UID', '');
         //$this->utils->setModuleData('OFFER_LAST_UID', '');
@@ -37,20 +40,26 @@ class End
             Loader::includeModule('iblock');
             Loader::includeModule('catalog');
 
+            $el = new \CIBlockElement();
+
             $elementsStatus = $this->utils->getElementsStatus(["IBLOCK_ID" => [2, 3]]);//все элементы с их статусами
             $productPrices = $this->utils->getElementPrices();//все элементы имеющие цены
-            $productAvailable = $this->utils->getAvailableElements();
-            //$productQuantity = $this->utils->getProductsQuantity();//все товары с количеством
+            $productQuantity = $this->utils->getProductsQuantity();//все товары с количеством
 
             $el = new \CIBlockElement();
 
             foreach ($elementsStatus as $id => $status) {
-//asdrubael@tut.by - dfgY_ey^667tf
-//                if (!isset($productPrices[$id])) {
-//                    if ($status != 'N') {
-//                        $el->Update($id, ['ACTIVE' => 'N']);
-//                    }
-//                }
+
+                if($status == 'Y'){
+                    if( !isset($productQuantity[$id] )|| !isset($productPrices[$id]) ){
+                        $el->Update($id, ['ACTIVE' => 'N']);
+                    }
+                }
+                else{
+                    if( isset($productPrices[$id]) && isset( $productQuantity[$id] ) ) {
+                        $el->Update($id, ['ACTIVE' => 'Y']);
+                    }
+                }
             }
         } catch (LoaderException $e) {
 
@@ -119,60 +128,80 @@ class End
         }
     }
 
-    public function updateAvailable()
-    {
-        $bx = new Rest();
-        $bx->updateAvailable();
-    }
+//    public function updateAvailable()
+//    {
+//        $bx = new Rest();
+//        $bx->updateAvailable();
+//    }
+//
+//    public function activateElement()
+//    {
+//        $bx = new Rest();
+//        $bx->activateElement();
+//    }
 
-    public function activateElement()
-    {
-        $bx = new Rest();
-        $bx->activateElement();
-    }
+//    public function deactivateEmptyPriceElem()
+//    {
+//
+//        try {
+//            Loader::includeModule('iblock');
+//            Loader::includeModule('catalog');
+//
+//            $res = \CIBlockElement::GetList(
+//                [],
+//                ["IBLOCK_ID" => [2, 3]],
+//                false,
+//                false,
+//                ['ID', 'ACTIVE']
+//            );
+//
+//            $ids = [];
+//
+//            while ($fields = $res->fetch()) {
+//                $ids[$fields['ID']] = $fields['ACTIVE'];
+//            }
+//
+//            $iterator = Model\Price::getlist([]);
+//            $productPrices = [];
+//
+//            while ($row = $iterator->fetch()) {
+//
+//                if ($row['PRICE'] > 0) {
+//                    $productPrices[$row['PRODUCT_ID']] = true;
+//                }
+//            }
+//            $el = new \CIBlockElement();
+//
+//            foreach ($ids as $id => $status) {
+//
+//                if (!isset($productPrices[$id])) {
+//                    if ($status != 'N') {
+//                        $el->Update($id, ['ACTIVE' => 'N']);
+//                    }
+//                }
+//            }
+//        } catch (LoaderException $e) {
+//
+//        }
+//    }
 
-    public function deactivateEmptyPriceElem()
-    {
+    public function activateProductsHaveActiveOffer(){
 
-        try {
-            Loader::includeModule('iblock');
-            Loader::includeModule('catalog');
+        $offersId = $this->utils->getBindOffers();
+        $productIds = $this->utils->getBindProductsFromOffers($offersId);
 
-            $res = \CIBlockElement::GetList(
-                [],
-                ["IBLOCK_ID" => [2, 3]],
-                false,
-                false,
-                ['ID', 'ACTIVE']
-            );
+        $res = \CIblockElement::GetList(
+            [],
+            ['IBLOCK_ID' => 2, 'ID' => $productIds, 'ACTIVE' => 'N'],
+            false,
+            false,
+            ['ID' , 'ACTIVE']
+        );
 
-            $ids = [];
+        $el = new \CIBlockElement();
 
-            while ($fields = $res->fetch()) {
-                $ids[$fields['ID']] = $fields['ACTIVE'];
-            }
-
-            $iterator = Model\Price::getlist([]);
-            $productPrices = [];
-
-            while ($row = $iterator->fetch()) {
-
-                if ($row['PRICE'] > 0) {
-                    $productPrices[$row['PRODUCT_ID']] = true;
-                }
-            }
-            $el = new \CIBlockElement();
-
-            foreach ($ids as $id => $status) {
-
-                if (!isset($productPrices[$id])) {
-                    if ($status != 'N') {
-                        $el->Update($id, ['ACTIVE' => 'N']);
-                    }
-                }
-            }
-        } catch (LoaderException $e) {
-
+        while( $fields = $res->fetch() ){
+            $el->Update($fields['ID'], ['ACTIVE' => 'Y']);
         }
     }
 }
